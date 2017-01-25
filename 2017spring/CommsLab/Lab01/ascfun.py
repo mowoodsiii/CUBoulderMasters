@@ -29,11 +29,22 @@ def bin2asc(dn, bits=8, flg=1):
    N = int(floor(n/float(abs(bits)))) # number of letters
 
    bitString = []
-
    for i in range(N):
       bitString.append(dn[(i*abs(bits)):((i+1)*abs(bits))])
+   if bits < 0:
+      for i in range(N):
+          bitString[i] = bitString[i][::-1]
+   ASCIIString = []
+   for i in range(N):
+       value=0
+       for j in range(abs(bits)):
+           value = value + (bitString[i][j]<<j)
+       ASCIIString.append(value)
+   textString=""
+   for i in range(N):
+       textString=textString+chr(ASCIIString[i])
 
-   print(bitString)
+   return(textString)
 
    """
    Serial binary to ASCII text conversion
