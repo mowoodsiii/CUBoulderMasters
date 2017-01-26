@@ -16,7 +16,7 @@ import wavfun as wf
 def ascii2ftpam(string="Test",bits=8,export="",Fs=44100,Fb=100):
     dn =  af.asc2bin(string,bits)
     print('"%s" = ' % (string))
-    st,Fs = bitstream(dn,bits,Fs,Fb,export)
+    st,tt,ctt,Fs = bitstream(dn,bits,Fs,Fb,export)
     if export is "export":
         wavexport(string,st,Fs)
     return
