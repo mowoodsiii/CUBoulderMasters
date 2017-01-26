@@ -13,14 +13,16 @@ from pylab import *
 import ascfun as af
 import wavfun as wf
 
-def bitstream(string="Test",bits=8,export=""):
-   Fs = 44100        # Sampling rate for s(t)
-   Fb = 100          # Bit rate for dn sequence
-   #txt = 'Test'      # Input text string
-   #bits = 8          # Number of bits
-   dn =  af.asc2bin(string,bits)# >> Convert txt to bitstream dn here <<
-   print('"%s" = ' % (string))
-   print(dn)
+def ascii2ftpam(string="Test",bits=8,export="",Fs=44100,Fb=100):
+    dn =  af.asc2bin(string,bits)
+    print('"%s" = ' % (string))
+    st,Fs = bitstream(dn,bits,Fs,Fb,export)
+    if export is "export":
+        wavexport(string,st,Fs)
+    return
+
+def bitstream(dn,bits=8,Fs=44100,Fb=100,export=""):
+   #print(dn)
    N = len(dn)       # Total number of bits
 
    Tb = 1/float(Fb)            # Time per bit
@@ -35,23 +37,26 @@ def bitstream(string="Test",bits=8,export=""):
    tt = arange(ixL,ixR)/float(Fs)  # Time axis for s(t)
    ctt = arange(0,len(dn))*Tb # Time axis for individule bit center points of dn
 
-   plt.figure(1,figsize=(10,4))
-   plt.plot(tt,st,'b-')
-   lettercolor=''
-   colors=['b','g','r','c','m','y','k']
-   for c in range(0,len(colors)):
-      for b in range(bits):
-          lettercolor=lettercolor + colors[c]
-   plt.scatter(ctt,dn,color=lettercolor)
-   ylim([-0.25,1.25])
-   grid()
-   plt.show()
-
    if export is "export":
-       if (len(string)>10) or (string.isalnum() is False):
-           print("NOTE: String is not alphanumeric...\n")
-           string="ascii2wav"
-       print('Outputting file as "%s.wav"\n\n' % (string))
-       wf.wavwrite(0.999*st/float(max(abs(st))),Fs,string+'.wav') # Write .wav file
+       bitstream_plot(tt,st,bits,ctt,dn)
+   return(st,tt,ctt,Fs)
 
-   return
+def wavexport(string,st,Fs):
+    if (len(string)>10) or (string.isalnum() is False):
+        print("NOTE: String is not alphanumeric...\n")
+        string="ascii2wav"
+    print('Outputting file as "%s.wav"\n\n' % (string))
+    wf.wavwrite(0.999*st/float(max(abs(st))),Fs,string+'.wav') # Write .wav file
+
+def bitstream_plot(tt,st,bits,ctt,dn):
+    plt.figure(1,figsize=(10,4))
+    plt.plot(tt,st,'b-')
+    lettercolor=''
+    colors=['b','g','r','c','m','y','k']
+    for c in range(0,len(colors)):
+       for b in range(bits):
+           lettercolor=lettercolor + colors[c]
+    plt.scatter(ctt,dn,color=lettercolor)
+    ylim([-0.25,1.25])
+    grid()
+    plt.show()

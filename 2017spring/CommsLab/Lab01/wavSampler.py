@@ -27,7 +27,7 @@ def wavSampler(Fs,wavfile):
     stem(newtt,filledwave)
     show()
 
-    fL = 3000
+    fL = 300
     k = 10
     tth,ht = sinc_ipol.sinc(Fs*multiplier,fL,k)
     plt.figure(1,figsize=(10,4))
@@ -36,6 +36,9 @@ def wavSampler(Fs,wavfile):
 
     convolvedwave = convolve(filledwave,ht,'same')
     plt.figure(1,figsize=(10,4))
-    stem(newtt,convolvedwave)
+    print(len(tth))
+    print(len(newtt))
+    print(len(convolvedwave))
+    stem(newtt[0:(multiplier*48)],convolvedwave[0:(multiplier*48)])
     show()
     return
