@@ -3,14 +3,17 @@
 from pylab import *
 from quantizer import *
 from ftpam01 import *
+from ftpam_rcvr01 import *
+from ascfun import *
 
-def mt2pcm(mt, tt, Fs, quant=8):
+def mt2pcm(mt, tt, Fs, quant):
     pwmt=quantizer(mt,quant,1)
 
     plt.figure(1,figsize=(12,5))
     plt.plot(tt,pwmt,'b-',tt,pwmt,'ro')
     plt.title("100Hz DT Sinusoidal Wave, sampled at Fs=%d Hz with an %d bit quantizer" % (Fs,quant))
     plt.xlabel('Time (s)')
+    plt.ylabel('Amplitude')
     plt.grid()
     plt.show()
 
@@ -21,18 +24,21 @@ def mt2pcm(mt, tt, Fs, quant=8):
     B = array(mod(array(floor(outer(pwmt,p2)),int),2),int8) # outer product: outer(vec1,vec2)
                 # Rows of B are bits of chars
     dn = reshape(B,B.size)
-    st,tt,ctt,Fs = bitstream(dn,quant,Fs)
+    st,tt,ctt,Fs = bitstream(dn,"",quant,Fs)
 
     plt.figure(1,figsize=(10,8))
     div=8
     for i in range(0,div):
+        if(i==0):
+            plt.title("%d-bit Quantizer PCM Signal Corresponding to m(t)" % (quant))
         plt.subplot((div*100)+11+i)
         plt.subplots_adjust(hspace=0.75)
         plt.plot(tt[(i*len(tt)/div):((i+1)*len(tt)/div)-1],st[(i*len(st)/div):((i+1)*len(tt)/div)-1],'b-')
         ylim([-0.25,1.25])
+        plt.ylabel("Logic")
+    plt.xlabel("t/Ts")
     plt.show()
-
-    return(pwmt,quant)
+    return(st)
 
     """
     Message signal m(t) to binary PCM conversion
@@ -44,22 +50,25 @@ def mt2pcm(mt, tt, Fs, quant=8):
     """
     # >>Your code goes here<<
 
-def pcm2mt(pwmt, quant=8):
-    Tb = 1/float(Fb)              # Time per bit
-    N = floor(len(rt)/float(Fs)/Tb)  # Number of received bits
-    rt = around(rt)
+def pcm2mt(pcm, Fb, quant):
+    tthat,mt,ctthat,dnhat=wavimport(pcm,Fb,quant)
+    textString,bitString = bin2asc(dnhat, quant)
 
-    ixL = round(-0.5*Fs*Tb)     # Left index for time axis
-    ixR = round((N-0.5)*Fs*Tb)  # Right index for time axis
+    print(len(bitString))
 
-    ixR=ixR+(len(rt)-(ixR-ixL))
-    tthat = arange(ixL,ixR)/float(Fs)
+    tt=arange(0,len(bitString))/Fb
 
-    dnhat = rt[round((Fs*Tb)/2)::int(Fs*Tb)]
-    dnhat = dnhat.astype(int)
-    ctthat = arange(0,len(dnhat))*Tb
+    mt=unquantizer(bitString,quant)
 
-    return
+    plt.figure(1,figsize=(12,5))
+    plt.plot(tt,mt,'b-',tt,mt,'ro')
+    plt.title("100Hz DT Sinusoidal Wave, sampled at Fs=%d Hz with an %d bit quantizer" % (Fb,quant))
+    plt.xlabel('Time (s)')
+    plt.ylabel("Amplitude")
+    plt.grid()
+    plt.show()
+
+    return(mt)
     """
     Binary PCM to message signal m(t) conversion
     >>>>> mt = pcm2mt(dn, bits) <<<<<

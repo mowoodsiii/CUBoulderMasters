@@ -24,7 +24,7 @@ def asc2bin(txt, bits=8):
    dn = reshape(B,B.size)
    return dn         # Serial binary output
 
-def bin2asc(dn, bits=8, flg=1):
+def bin2asc(dn, bits, flg=1):
    n = int(len(dn)) # number of bits
    N = int(floor(n/float(abs(bits)))) # number of letters
 
@@ -44,7 +44,7 @@ def bin2asc(dn, bits=8, flg=1):
    for i in range(N):
        textString=textString+chr(ASCIIString[i])
 
-   return(textString)
+   return(textString,ASCIIString)
 
    """
    Serial binary to ASCII text conversion

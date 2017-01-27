@@ -1,6 +1,6 @@
 import numpy as np
 
-def quantizer(mt,quant=3,A=1):
+def quantizer(mt,quant,A=1):
     bits = pow(2,quant)
     bitrange = (A-(-A))/(bits)
 
@@ -32,3 +32,15 @@ def quantizer(mt,quant=3,A=1):
     #print(vals)
     pwmt=np.piecewise(mt,eval(lims),eval(binvals))
     return(pwmt)
+
+def unquantizer(pwmt,quant):
+    pwmt=np.asarray(pwmt)
+    bits=pow(2,quant)
+    lims=''
+    for i in range(0,bits):
+        lims=lims+'(pwmt=='+str(i)+')'
+        lims=lims+','
+    lims='['+lims[:-1]+']'
+    vals=np.arange(0,bits/2).tolist()+(np.arange(-1,-1-bits/2,-1).tolist())
+    mt=np.piecewise(pwmt,eval(lims),vals)
+    return(mt)

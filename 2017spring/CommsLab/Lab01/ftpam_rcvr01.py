@@ -14,6 +14,34 @@ import wavfun as wf
 
 def wav2ascii(filename,bits=8,Fb=100,pfilter="none",thresh=1):
     rt, Fs = wf.wavread(filename)
+
+    tthat, rt, ctthat, dnhat = wavimport(rt,Fs,bits,Fb,pfilter,thresh)
+
+    plt.figure(1,figsize=(10,2.5))
+    plt.plot(tthat,rt,'b-')
+    lettercolor=''
+    colors=['b','g','r','c','m','y','k']
+    for c in range(0,len(colors)):
+       for b in range(bits):
+           lettercolor=lettercolor + colors[c]
+    plt.scatter(ctthat,dnhat,color=lettercolor)
+    title = "Unipolar Binary Flat-Top PAM for file '" + filename + "' (Fb=" + str(Fb) + "bit/sec)"
+    plt.xlabel("time(s)")
+    plt.ylabel("s(t)")
+
+    if pfilter is not "none":
+        title = title + " (filter threshhold = " + str(thresh) + ")"
+    plt.title(title)
+    #ylim([amin(rt)-0.1,amax(rt)+0.1])
+    plt.show()
+
+    print('The file "%s" reads: ' % (filename))
+
+    txthat,ASCIIString =  af.bin2asc(dnhat,bits)
+
+    print(txthat)
+
+def wavimport(rt,Fs,bits,Fb=100,pfilter="none",thresh=1):
     Tb = 1/float(Fb)              # Time per bit
     N = floor(len(rt)/float(Fs)/Tb)  # Number of received bits
 
@@ -37,26 +65,4 @@ def wav2ascii(filename,bits=8,Fb=100,pfilter="none",thresh=1):
     dnhat = rt[round((Fs*Tb)/2)::int(Fs*Tb)]
     dnhat = dnhat.astype(int)
     ctthat = arange(0,len(dnhat))*Tb
-
-    plt.figure(1,figsize=(10,2.5))
-    plt.plot(tthat,rt,'b-')
-    lettercolor=''
-    colors=['b','g','r','c','m','y','k']
-    for c in range(0,len(colors)):
-       for b in range(bits):
-           lettercolor=lettercolor + colors[c]
-    plt.scatter(ctthat,dnhat,color=lettercolor)
-    title = "Unipolar Binary Flat-Top PAM for file '" + filename + "' (Fb=" + str(Fb) + "bit/sec)"
-
-    if pfilter is not "none":
-        title = title + " (filter threshhold = " + str(thresh) + ")"
-    plt.title(title)
-    #ylim([amin(rt)-0.1,amax(rt)+0.1])
-    plt.show()
-
-    print('The file "%s" reads: ' % (filename))
-    print(dnhat)
-
-    txthat =  af.bin2asc(dnhat,bits)
-
-    print('\n...which translates to: "%s"' % (txthat))
+    return(tthat,rt,ctthat,dnhat)

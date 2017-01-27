@@ -16,12 +16,12 @@ import wavfun as wf
 def ascii2ftpam(string="Test",bits=8,export="",Fs=44100,Fb=100):
     dn =  af.asc2bin(string,bits)
     print('"%s" = ' % (string))
-    st,tt,ctt,Fs = bitstream(dn,bits,Fs,Fb,export)
+    st,tt,ctt,Fs = bitstream(dn,string,bits,Fs,Fb,export)
     if export is "export":
         wavexport(string,st,Fs)
     return
 
-def bitstream(dn,bits=8,Fs=44100,Fb=100,export=""):
+def bitstream(dn,string="",bits=8,Fs=44100,Fb=100,export=""):
    #print(dn)
    N = len(dn)       # Total number of bits
 
@@ -38,7 +38,7 @@ def bitstream(dn,bits=8,Fs=44100,Fb=100,export=""):
    ctt = arange(0,len(dn))*Tb # Time axis for individule bit center points of dn
 
    if export is "export":
-       bitstream_plot(tt,st,bits,ctt,dn)
+       bitstream_plot(tt,st,bits,ctt,dn,string)
    return(st,tt,ctt,Fs)
 
 def wavexport(string,st,Fs):
@@ -48,7 +48,7 @@ def wavexport(string,st,Fs):
     print('Outputting file as "%s.wav"\n\n' % (string))
     wf.wavwrite(0.999*st/float(max(abs(st))),Fs,string+'.wav') # Write .wav file
 
-def bitstream_plot(tt,st,bits,ctt,dn):
+def bitstream_plot(tt,st,bits,ctt,dn,string):
     plt.figure(1,figsize=(10,4))
     plt.plot(tt,st,'b-')
     lettercolor=''
@@ -59,4 +59,7 @@ def bitstream_plot(tt,st,bits,ctt,dn):
     plt.scatter(ctt,dn,color=lettercolor)
     ylim([-0.25,1.25])
     grid()
+    plt.xlabel("time(s)")
+    plt.ylabel("s(t)")
+    plt.title("Unipolar Binary Flat-Top PAM for String '%s'" % (string))
     plt.show()

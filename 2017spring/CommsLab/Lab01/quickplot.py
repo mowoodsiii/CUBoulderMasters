@@ -4,9 +4,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def quickplot(plotx,ploty,xaxis,yaxis,title):
+def quickplot(plotx,ploty,xaxis,yaxis,title,style="b-"):
   plt.figure(1,figsize=(10,4))
-  plt.plot(plotx,ploty)
+  plt.plot(plotx,ploty,style)
   plt.xlabel(xaxis)
   plt.ylabel(yaxis)
   plt.title(title)
