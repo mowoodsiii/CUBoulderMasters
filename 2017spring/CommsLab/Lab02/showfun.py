@@ -98,7 +98,8 @@ def showft_plus(sig_xt, ff_lim):
     # ***** Mirror |X(f)| about 0 (if ff_lim[0]<0) *****
     if f_low<0:
         absXf = concatenate([absXf[::-1],absXf])
-        argXf = concatenate([argXf[::-1],argXf])
+        neg = [-1*i for i in argXf]
+        argXf = concatenate([neg[::-1],argXf])
         neg = [-1*i for i in ff]
         ff = concatenate([neg[::-1],ff])
     # ***** Floor values of argXf for points where absXf<llim *****
@@ -166,7 +167,8 @@ def showft_plusplus(sig_xt, ff_lim):
     # ***** Mirror |X(f)| about 0 (if ff_lim[0]<0) *****
     if f_low<0:
         absXf = concatenate([absXf[::-1],absXf])
-        argXf = concatenate([argXf[::-1],argXf])
+        neg = [-1*i for i in argXf]
+        argXf = concatenate([neg[::-1],argXf])
         neg = [-1*i for i in ff]
         ff = concatenate([neg[::-1],ff])
     # ***** Floor values of argXf for points where absXf<llim *****
