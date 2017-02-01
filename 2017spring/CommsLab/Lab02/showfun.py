@@ -93,17 +93,6 @@ def showft_plus(sig_xt, ff_lim):
     absXf = abs(Xf)           # Magnitude |X(f)|
     argXf = angle(Xf)         # Phase arg[X(f)]
     # ***** Mirror |X(f)| about 0 (if ff_lim[0]<0) *****
-#    if ff_lim[0]<0:
-#        absXf=absXf.tolist()
-#        argXf=argXf.tolist()
-#        ff=ff.tolist()
-#        rev = absXf[::-1]
-#        absXf = asarray(rev+absXf)
-#        rev = argXf[::-1]
-#        argXf = asarray(rev+argXf)
-#        neg = [-1*i for i in ff]
-#        ff = asarray(neg[::-1]+ff)
-
     if ff_lim[0]<0:
         absXf = concatenate([absXf[::-1],absXf])
         argXf = concatenate([argXf[::-1],argXf])
