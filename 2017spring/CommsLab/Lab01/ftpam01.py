@@ -19,7 +19,7 @@ def ascii2ftpam(string="Test",bits=8,export="",Fs=44100,Fb=100):
     st,tt,ctt,Fs = bitstream(dn,string,bits,Fs,Fb,export)
     if export is "export":
         wavexport(string,st,Fs)
-    return
+    return(st,tt,Fs)
 
 def bitstream(dn,string="",bits=8,Fs=44100,Fb=100,export=""):
    #print(dn)
