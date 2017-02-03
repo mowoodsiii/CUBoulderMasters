@@ -39,7 +39,7 @@ def pam10(sig_an, Fs, ptype, pparms=[]):
     # ***** Set up PAM pulse p(t) *****
     ptype = ptype.lower()      # Convert ptype to lowercase
     # Set left/right limits for p(t)
-    if (ptype==’rect’):
+    if (ptype=='rect'):
         kL = -0.5; kR = -kL
     else:
         kL = -1.0; kR = -kL    # Default left/right limits
@@ -47,11 +47,11 @@ def pam10(sig_an, Fs, ptype, pparms=[]):
     ixpR = ceil(Fs*kR/float(FB))   # Right index for p(t) time axis
     ttp = arange(ixpL,ixpR)/float(Fs)  # Time axis for p(t)
     pt = zeros(len(ttp))       # Initialize pulse p(t)
-    if (ptype==’rect’):        # Rectangular p(t)
+    if (ptype=='rect'):        # Rectangular p(t)
         ix = where(logical_and(ttp>=kL/float(FB), ttp<kR/float(FB)))[0]
         pt[ix] = ones(len(ix))
     else:
-        print("ptype ’%s’ is not recognized" % ptype)
+        print("ptype ''%s' is not recognized" % ptype)
     # ***** Filter with h(t) = p(t) *****
     st = convolve(ast,pt)/float(Fs)  # s(t) = a_s(t)*p(t)
     st = st[-ixpL:ixR-ixL-ixpL]  # Trim after convolution

@@ -185,9 +185,6 @@ def showft_plusplus(sig_xt, ff_lim):
                 absXf[i] = 20*math.log10(absXf[i]/absXfmax)
             else:
                 absXf[i]=llim
-        for i in range(0,len(absXf)):
-            if absXf[i]<llim:
-                #absXf[i]=llim
                 argXf[i]=0
     # ***** Plot magnitude/phase *****
     f1 = figure()

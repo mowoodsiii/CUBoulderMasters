@@ -39,7 +39,7 @@ class sigWave:
 
 class sigSequ:
     """ Class for ’sequence’ (DT) signals """
-    type = ’sequence’
+    type = 'sequence'
     def __init__(self, sig, FB = 100, n0 = 0):
         """
         sig: real or complex-valued sequence values
@@ -49,6 +49,7 @@ class sigSequ:
         self.sig = np.asanyarray(sig)
         self.FB = FB
         self.n0 = n0
+
     # Properties
     def __len__(self):
         return len(self.sig)
@@ -56,6 +57,7 @@ class sigSequ:
         return self.FB
     def get_n0(self):
         return self.n0
+
     # Methods
     def indexAxis(self):
         return self.n0 + np.arange(len(self.sig))
