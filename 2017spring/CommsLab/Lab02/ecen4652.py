@@ -36,3 +36,33 @@ class sigWave:
         return copy.deepcopy(self)
     def scale(self, factor):  # Make a scaled copy of a sigWave object
         return sigWave(factor*self.sig, self.Fs, self.t0)
+
+class sigSequ:
+    """ Class for ’sequence’ (DT) signals """
+    type = ’sequence’
+    def __init__(self, sig, FB = 100, n0 = 0):
+        """
+        sig: real or complex-valued sequence values
+        FB: symbol (or Baud) rate (default 100 Baud)
+        n0: start index of sequence (default 0)
+        """
+        self.sig = np.asanyarray(sig)
+        self.FB = FB
+        self.n0 = n0
+    # Properties
+    def __len__(self):
+        return len(self.sig)
+    def get_FB(self):
+        return self.FB
+    def get_n0(self):
+        return self.n0
+    # Methods
+    def indexAxis(self):
+        return self.n0 + np.arange(len(self.sig))
+    def signal(self):
+        return self.sig
+    def copy(self):
+        return copy.deepcopy(self)
+    def scale_offset(self, a, b = 0):
+        """ x[n]_out = a*x[n]_in + b """
+        return sigSequ(a*self.sig+b, self.FB, self.n0)

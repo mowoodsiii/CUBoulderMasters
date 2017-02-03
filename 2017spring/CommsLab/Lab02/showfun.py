@@ -178,10 +178,16 @@ def showft_plusplus(sig_xt, ff_lim):
                 argXf[i] = 0
     # ***** Convert absXt to dB and floor argXf for points where absXf<llim(dB) *****
     if llim<0:
-        absXf = [20*math.log10(i/amax(absXf)) for i in absXf]
+        mag=10**(llim/20)
+        absXfmax=amax(absXf)
+        for i in range(0,len(absXf)):
+            if absXf[i]>mag:
+                absXf[i] = 20*math.log10(absXf[i]/absXfmax)
+            else:
+                absXf[i]=llim
         for i in range(0,len(absXf)):
             if absXf[i]<llim:
-                absXf[i]=llim
+                #absXf[i]=llim
                 argXf[i]=0
     # ***** Plot magnitude/phase *****
     f1 = figure()
