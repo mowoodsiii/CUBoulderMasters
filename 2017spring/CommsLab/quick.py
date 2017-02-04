@@ -1,6 +1,7 @@
 # File: quick.py
 # A way to quickly plot a single figure, generate a time axis....
 
+from pylab import *
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -17,6 +18,9 @@ def quickplot(plotx1,ploty1,style1="b-",plotx2=[],ploty2=[],style2="or",title=""
     plt.show()
     return
 
-def quicktt(array,rate):
-    tt=arange(len(array))/float(rate)
+def quicktt(array,rate,length=0,start=0):
+    if(length==0):
+        tt=arange(len(array))/float(rate)
+    else:
+        tt = arange(start,round(rate*length))/float(rate)
     return(tt)
