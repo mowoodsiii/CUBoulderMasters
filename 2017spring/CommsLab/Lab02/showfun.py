@@ -41,7 +41,7 @@ def showft(sig_xt, ff_lim):
     absXf = abs(Xf)           # Magnitude |X(f)|
     argXf = angle(Xf)         # Phase arg[X(f)]
     # ***** Plot magnitude/phase *****
-    f1 = figure()
+    f1 = figure(figsize=[14,8])
     af11 = f1.add_subplot(211)
     af11.plot(ff,absXf)         # Plot magnitude
     af11.grid()
@@ -108,7 +108,7 @@ def showft_plus(sig_xt, ff_lim):
             if absXf[i] < llim:
                 argXf[i] = 0
     # ***** Plot magnitude/phase *****
-    f1 = figure()
+    f1 = figure(figsize=[14,8])
     af11 = f1.add_subplot(211)
     af11.plot(ff,absXf)         # Plot magnitude
     af11.grid()
@@ -187,11 +187,14 @@ def showft_plusplus(sig_xt, ff_lim):
                 absXf[i]=llim
                 argXf[i]=0
     # ***** Plot magnitude/phase *****
-    f1 = figure()
+    f1 = figure(figsize=[14,8])
     af11 = f1.add_subplot(211)
     af11.plot(ff,absXf)         # Plot magnitude
     af11.grid()
-    af11.set_ylabel('|X(f)|')
+    str_ylabel='|X(f)|'
+    if(llim<0):
+        str_ylabel=str_ylabel+' (in dB)'
+    af11.set_ylabel(str_ylabel)
     strgt = 'FT Approximation, $F_s=$' + str(Fs) + ' Hz'
     strgt = strgt + ', N=' + str(N)
     strgt = strgt + ', $\Delta_f$={0:3.2f}'.format(Fs/float(N)) + ' Hz'
