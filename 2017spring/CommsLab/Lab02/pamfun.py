@@ -2,6 +2,8 @@
 # Functions for pulse amplitude modulation (PAM)
 from pylab import *
 import ecen4652 as ecen
+from quick import *
+import sinc_ipol
 
 def pam10(sig_an, Fs, ptype, pparms=[]):
     """
@@ -23,6 +25,7 @@ def pam10(sig_an, Fs, ptype, pparms=[]):
         sig_st.signal():    CT output signal s(t), -TB/2<=t<(N-1/2)*TB,
         with sampling rate Fs
     """
+    M=1
     N = len(sig_an)            # Number of data symbols
     FB = sig_an.get_FB()       # Baud rate
     if(ptype=='tri'):
@@ -30,6 +33,7 @@ def pam10(sig_an, Fs, ptype, pparms=[]):
     elif(ptype=='sinc'):
         k=pparms[0]
         beta=pparms[1]
+        fLdiv=pparms[2]
     n0 = sig_an.get_n0()       # Starting index
     ixL = ceil(-Fs*(n0+0.5)/float(FB))   # Left index for time axis
     ixR = ceil(Fs*(n0+N-0.5)/float(FB))  # Right index for time axis
@@ -54,11 +58,20 @@ def pam10(sig_an, Fs, ptype, pparms=[]):
     if (ptype=='rect' or ptype=='tri'):        # Rectangular p(t)
         ix = where(logical_and(ttp>=kL/float(FB), ttp<kR/float(FB)))[0]
         pt[ix] = ones(len(ix))
+        st = convolve(ast,pt)/float(Fs)  # s(t) = a_s(t)*p(t)
+        st = st[int(-ixpL):int(ixR-ixL-ixpL)]  # Trim after convolution
     elif (ptype=='sinc'):
-        pwt = sig_pt.sig*kaiser(len(sig_pt.sig),beta)    # Pulse p(t), Kaiser windowed
+        M=4
+        cpast=an
+        ast=[]
+        for i in range(0,len(cpast)):
+            ast=concatenate([ast,[cpast[i]],asarray(zeros(M-1))])
+        nn = arange(-k*M,k*M)          # Index axis
+        pt = sinc((1/M)*nn)  # Sinc for interpolation (low-pass filtering)
+        ttp,pt = sinc_ipol.sinc(Fs*M,(Fs*M)/fLdiv,k)
+        pt = pt*kaiser(len(pt),beta) # Pulse p(t), Kaiser windowe
+        st = convolve(ast,pt,"same")/float(Fs)  # s(t) = a_s(t)*p(t)
     else:
         print("ptype '%s' is not recognized" % ptype)
-    # ***** Filter with h(t) = p(t) *****
-    st = convolve(ast,pt)/float(Fs)  # s(t) = a_s(t)*p(t)
-    st = st[int(-ixpL):int(ixR-ixL-ixpL)]  # Trim after convolution
+
     return ecen.sigWave(st, Fs, t0)  # Return waveform from sigWave class

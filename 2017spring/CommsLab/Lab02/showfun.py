@@ -187,7 +187,7 @@ def showft_plusplus(sig_xt, ff_lim):
                 absXf[i]=llim
                 argXf[i]=0
     # ***** Plot magnitude/phase *****
-    f1 = figure(figsize=[14,8])
+    f1 = figure(figsize=[14,6])
     af11 = f1.add_subplot(211)
     af11.plot(ff,absXf)         # Plot magnitude
     af11.grid()

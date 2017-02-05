@@ -18,9 +18,9 @@ def quickplot(plotx1,ploty1,style1="b-",plotx2=[],ploty2=[],style2="or",title=""
     plt.show()
     return
 
-def quicktt(arrayORtime,Fs,Fb=1,start=0):
-    if (isinstance(arrayORtime,float)) or (isinstance(arrayORtime,int)): # arrayORtime is a time value
-        tt = arange(start,round(Fs*arrayORtime))/float(Fs)
-    else: # arrayORtime is an array of data points
-        tt = arange(len(arrayORtime))*Fb/float(Fs)
+def quicktt(array,rate,length=0,start=0):
+    if(length==0):
+        tt=arange(len(array))/float(rate)
+    else:
+        tt = arange(start,round(rate*length))/float(rate)
     return(tt)
