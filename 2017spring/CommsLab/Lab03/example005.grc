@@ -82,10 +82,14 @@
     </param>
   </block>
   <block>
-    <key>variable</key>
+    <key>variable_qtgui_range</key>
     <param>
       <key>comment</key>
       <value></value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>1000</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -93,7 +97,11 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(424, 12)</value>
+      <value>(176, 272)</value>
+    </param>
+    <param>
+      <key>gui_hint</key>
+      <value>1,1,1,1</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -102,122 +110,6 @@
     <param>
       <key>id</key>
       <value>f0</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>1/(tau*2)</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(272, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>fL</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>32000</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(352, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>k</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>1</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(176, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>samp_rate</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>32000</value>
-    </param>
-  </block>
-  <block>
-    <key>variable_qtgui_range</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>0.010</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(8, 200)</value>
-    </param>
-    <param>
-      <key>gui_hint</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>tau</value>
     </param>
     <param>
       <key>label</key>
@@ -233,15 +125,15 @@
     </param>
     <param>
       <key>start</key>
-      <value>0</value>
+      <value>-5000</value>
     </param>
     <param>
       <key>step</key>
-      <value>0.001</value>
+      <value>1</value>
     </param>
     <param>
       <key>stop</key>
-      <value>0.030</value>
+      <value>5000</value>
     </param>
     <param>
       <key>rangeType</key>
@@ -253,10 +145,14 @@
     </param>
   </block>
   <block>
-    <key>variable_tag_object</key>
+    <key>variable_qtgui_range</key>
     <param>
       <key>comment</key>
       <value></value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>0</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -264,7 +160,11 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 96)</value>
+      <value>(296, 272)</value>
+    </param>
+    <param>
+      <key>gui_hint</key>
+      <value>0,1,1,1</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -272,27 +172,43 @@
     </param>
     <param>
       <key>id</key>
-      <value>variable_tag_object_0</value>
+      <value>offset</value>
     </param>
     <param>
-      <key>key</key>
-      <value>pmt.intern("key")</value>
+      <key>label</key>
+      <value></value>
     </param>
     <param>
-      <key>offset</key>
-      <value>0</value>
+      <key>min_len</key>
+      <value>200</value>
     </param>
     <param>
-      <key>src</key>
-      <value>pmt.intern("src")</value>
+      <key>orient</key>
+      <value>Qt.Horizontal</value>
     </param>
     <param>
-      <key>value</key>
-      <value>pmt.intern("value")</value>
+      <key>start</key>
+      <value>-1</value>
+    </param>
+    <param>
+      <key>step</key>
+      <value>0.01</value>
+    </param>
+    <param>
+      <key>stop</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>rangeType</key>
+      <value>float</value>
+    </param>
+    <param>
+      <key>widget</key>
+      <value>counter_slider</value>
     </param>
   </block>
   <block>
-    <key>variable_tag_object</key>
+    <key>variable</key>
     <param>
       <key>comment</key>
       <value></value>
@@ -303,7 +219,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 304)</value>
+      <value>(8, 124)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -311,23 +227,173 @@
     </param>
     <param>
       <key>id</key>
-      <value>variable_tag_object_1</value>
-    </param>
-    <param>
-      <key>key</key>
-      <value>pmt.intern("key")</value>
-    </param>
-    <param>
-      <key>offset</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>src</key>
-      <value>pmt.intern("src")</value>
+      <value>samp_rate</value>
     </param>
     <param>
       <key>value</key>
-      <value>pmt.intern("value")</value>
+      <value>32000</value>
+    </param>
+  </block>
+  <block>
+    <key>variable_qtgui_chooser</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>102</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(8, 220)</value>
+    </param>
+    <param>
+      <key>gui_hint</key>
+      <value>0,0,2,1</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>waveform</value>
+    </param>
+    <param>
+      <key>label0</key>
+      <value>Cosine</value>
+    </param>
+    <param>
+      <key>label1</key>
+      <value>Rectangular</value>
+    </param>
+    <param>
+      <key>label2</key>
+      <value>Triangular</value>
+    </param>
+    <param>
+      <key>label3</key>
+      <value></value>
+    </param>
+    <param>
+      <key>label4</key>
+      <value></value>
+    </param>
+    <param>
+      <key>label</key>
+      <value></value>
+    </param>
+    <param>
+      <key>labels</key>
+      <value>[]</value>
+    </param>
+    <param>
+      <key>num_opts</key>
+      <value>3</value>
+    </param>
+    <param>
+      <key>option0</key>
+      <value>102</value>
+    </param>
+    <param>
+      <key>option1</key>
+      <value>103</value>
+    </param>
+    <param>
+      <key>option2</key>
+      <value>104</value>
+    </param>
+    <param>
+      <key>option3</key>
+      <value>3</value>
+    </param>
+    <param>
+      <key>option4</key>
+      <value>4</value>
+    </param>
+    <param>
+      <key>options</key>
+      <value>[0, 1, 2]</value>
+    </param>
+    <param>
+      <key>orient</key>
+      <value>Qt.QHBoxLayout</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>int</value>
+    </param>
+    <param>
+      <key>widget</key>
+      <value>radio_buttons</value>
+    </param>
+  </block>
+  <block>
+    <key>analog_sig_source_x</key>
+    <param>
+      <key>amp</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>freq</key>
+      <value>f0</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(160, 112)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>analog_sig_source_x_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>offset</key>
+      <value>offset</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>float</value>
+    </param>
+    <param>
+      <key>samp_rate</key>
+      <value>samp_rate</value>
+    </param>
+    <param>
+      <key>waveform</key>
+      <value>waveform</value>
     </param>
   </block>
   <block>
@@ -350,7 +416,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(480, 116)</value>
+      <value>(328, 140)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -386,7 +452,11 @@
     </param>
   </block>
   <block>
-    <key>blocks_throttle</key>
+    <key>low_pass_filter</key>
+    <param>
+      <key>beta</key>
+      <value>6.76</value>
+    </param>
     <param>
       <key>alias</key>
       <value></value>
@@ -400,197 +470,40 @@
       <value></value>
     </param>
     <param>
-      <key>_enabled</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(480, 196)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_throttle_0_0</value>
-    </param>
-    <param>
-      <key>ignoretag</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>samples_per_second</key>
-      <value>samp_rate</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
-    </param>
-  </block>
-  <block>
-    <key>blocks_vector_source_x</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(200, 100)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_vector_source_x_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>repeat</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>tags</key>
-      <value>[]</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>vector</key>
-      <value>np.hstack((np.ones(int(tau*samp_rate)), np.zeros(int((0.1-tau)*samp_rate))))</value>
-    </param>
-  </block>
-  <block>
-    <key>blocks_vector_source_x</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(200, 180)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_vector_source_x_0_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>repeat</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>tags</key>
-      <value>[]</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>vector</key>
-      <value>sin(2*pi*f0*(arange(0,len(sqrpulse))/float(samp_rate)))*(np.hstack((np.ones(int(tau*samp_rate)), np.zeros(int((0.1-tau)*samp_rate)))))</value>
-    </param>
-  </block>
-  <block>
-    <key>fir_filter_xxx</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
+      <key>cutoff_freq</key>
+      <value>1000</value>
     </param>
     <param>
       <key>decim</key>
-      <value>1</value>
+      <value>2</value>
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>True</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>fir_filter_fff</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(464, 316)</value>
+      <value>(496, 96)</value>
     </param>
     <param>
       <key>_rotation</key>
       <value>0</value>
     </param>
     <param>
+      <key>gain</key>
+      <value>1</value>
+    </param>
+    <param>
       <key>id</key>
-      <value>fir_filter_xxx_0</value>
+      <value>low_pass_filter_0</value>
+    </param>
+    <param>
+      <key>interp</key>
+      <value>1</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -601,109 +514,16 @@
       <value>0</value>
     </param>
     <param>
-      <key>samp_delay</key>
-      <value>0</value>
+      <key>samp_rate</key>
+      <value>samp_rate</value>
     </param>
     <param>
-      <key>taps</key>
-      <value>2*fL*np.sinc(2*fL/samp_rate*np.arange(-k*samp_rate/(2*fL),k*samp_rate/(2*fL)))</value>
+      <key>width</key>
+      <value>500</value>
     </param>
     <param>
-      <key>type</key>
-      <value>fff</value>
-    </param>
-  </block>
-  <block>
-    <key>import</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(512, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>import_0</value>
-    </param>
-    <param>
-      <key>import</key>
-      <value>import numpy as np</value>
-    </param>
-  </block>
-  <block>
-    <key>import</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(592, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>import_0_0</value>
-    </param>
-    <param>
-      <key>import</key>
-      <value>from ast import literal_eval</value>
-    </param>
-  </block>
-  <block>
-    <key>import</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(712, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>import_0_0_0</value>
-    </param>
-    <param>
-      <key>import</key>
-      <value>from pylab import *</value>
+      <key>win</key>
+      <value>firdes.WIN_HAMMING</value>
     </param>
   </block>
   <block>
@@ -754,7 +574,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(728, 92)</value>
+      <value>(704, 76)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -950,7 +770,7 @@
     </param>
     <param>
       <key>nconnections</key>
-      <value>2</value>
+      <value>1</value>
     </param>
     <param>
       <key>showports</key>
@@ -1041,7 +861,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(728, 188)</value>
+      <value>(704, 172)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -1309,7 +1129,7 @@
     </param>
     <param>
       <key>nconnections</key>
-      <value>2</value>
+      <value>1</value>
     </param>
     <param>
       <key>size</key>
@@ -1333,7 +1153,7 @@
     </param>
     <param>
       <key>tr_mode</key>
-      <value>qtgui.TRIG_MODE_NORM</value>
+      <value>qtgui.TRIG_MODE_FREE</value>
     </param>
     <param>
       <key>tr_slope</key>
@@ -1369,38 +1189,26 @@
     </param>
   </block>
   <connection>
-    <source_block_id>blocks_throttle_0</source_block_id>
-    <sink_block_id>qtgui_freq_sink_x_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_throttle_0</source_block_id>
-    <sink_block_id>qtgui_time_sink_x_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_throttle_0_0</source_block_id>
-    <sink_block_id>qtgui_freq_sink_x_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>1</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_throttle_0_0</source_block_id>
-    <sink_block_id>qtgui_time_sink_x_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>1</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_vector_source_x_0</source_block_id>
+    <source_block_id>analog_sig_source_x_0</source_block_id>
     <sink_block_id>blocks_throttle_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>blocks_vector_source_x_0_0</source_block_id>
-    <sink_block_id>blocks_throttle_0_0</sink_block_id>
+    <source_block_id>blocks_throttle_0</source_block_id>
+    <sink_block_id>low_pass_filter_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>low_pass_filter_0</source_block_id>
+    <sink_block_id>qtgui_freq_sink_x_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>low_pass_filter_0</source_block_id>
+    <sink_block_id>qtgui_time_sink_x_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
