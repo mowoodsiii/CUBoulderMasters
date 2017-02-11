@@ -4,7 +4,7 @@
 # GNU Radio Python Flow Graph
 # Title: Lab 03
 # Author: Maurice Woods
-# Generated: Fri Feb 10 00:37:40 2017
+# Generated: Fri Feb 10 21:12:24 2017
 ##################################################
 
 if __name__ == '__main__':
@@ -18,15 +18,17 @@ if __name__ == '__main__':
             print "Warning: failed to XInitThreads()"
 
 from PyQt4 import Qt
-from gnuradio import analog
+from PyQt4.QtCore import QObject, pyqtSlot
 from gnuradio import blocks
 from gnuradio import eng_notation
+from gnuradio import filter
 from gnuradio import gr
 from gnuradio import qtgui
 from gnuradio.eng_option import eng_option
 from gnuradio.filter import firdes
-from gnuradio.qtgui import Range, RangeWidget
 from optparse import OptionParser
+import numpy as np
+import ptfun  # embedded python module
 import sip
 import sys
 from gnuradio import qtgui
@@ -61,27 +63,49 @@ class top_block(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.samp_rate = samp_rate = 32000
-        self.f0 = f0 = 1000
+        self.sps = sps = 5
+        self.samp_rate = samp_rate = 10000
+        self.ptype = ptype = 'tri'
+        self.k = k = 5
+        self.beta = beta = 2.5
+        self.PTYPE = PTYPE = 'sinc'
 
         ##################################################
         # Blocks
         ##################################################
-        self._f0_range = Range(-5000, 5000, 1, 1000, 200)
-        self._f0_win = RangeWidget(self._f0_range, self.set_f0, "f0", "counter_slider", float)
-        self.top_grid_layout.addWidget(self._f0_win, 0,0,1,1)
+        self._PTYPE_options = ('rect', 'tri', 'sinc', )
+        self._PTYPE_labels = ('Rectangular', 'Triangular', 'Sinc', )
+        self._PTYPE_group_box = Qt.QGroupBox("PTYPE")
+        self._PTYPE_box = Qt.QVBoxLayout()
+        class variable_chooser_button_group(Qt.QButtonGroup):
+            def __init__(self, parent=None):
+                Qt.QButtonGroup.__init__(self, parent)
+            @pyqtSlot(int)
+            def updateButtonChecked(self, button_id):
+                self.button(button_id).setChecked(True)
+        self._PTYPE_button_group = variable_chooser_button_group()
+        self._PTYPE_group_box.setLayout(self._PTYPE_box)
+        for i, label in enumerate(self._PTYPE_labels):
+        	radio_button = Qt.QRadioButton(label)
+        	self._PTYPE_box.addWidget(radio_button)
+        	self._PTYPE_button_group.addButton(radio_button, i)
+        self._PTYPE_callback = lambda i: Qt.QMetaObject.invokeMethod(self._PTYPE_button_group, "updateButtonChecked", Qt.Q_ARG("int", self._PTYPE_options.index(i)))
+        self._PTYPE_callback(self.PTYPE)
+        self._PTYPE_button_group.buttonClicked[int].connect(
+        	lambda i: self.set_PTYPE(self._PTYPE_options[i]))
+        self.top_grid_layout.addWidget(self._PTYPE_group_box, 1,1,2,1)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
         	1024, #size
         	samp_rate, #samp_rate
         	"", #name
-        	3 #number of inputs
+        	1 #number of inputs
         )
         self.qtgui_time_sink_x_0.set_update_time(0.10)
         self.qtgui_time_sink_x_0.set_y_axis(-1, 1)
 
         self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
 
-        self.qtgui_time_sink_x_0.enable_tags(-1, True)
+        self.qtgui_time_sink_x_0.enable_tags(-1, False)
         self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
         self.qtgui_time_sink_x_0.enable_autoscale(False)
         self.qtgui_time_sink_x_0.enable_grid(True)
@@ -104,7 +128,7 @@ class top_block(gr.top_block, Qt.QWidget):
         alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
                   1.0, 1.0, 1.0, 1.0, 1.0]
 
-        for i in xrange(3):
+        for i in xrange(1):
             if len(labels[i]) == 0:
                 self.qtgui_time_sink_x_0.set_line_label(i, "Data {0}".format(i))
             else:
@@ -117,58 +141,49 @@ class top_block(gr.top_block, Qt.QWidget):
 
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.pyqwidget(), Qt.QWidget)
         self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_win, 1,0,1,1)
-        self.blocks_throttle_0_1 = blocks.throttle(gr.sizeof_float*1, samp_rate,True)
-        self.blocks_throttle_0_0 = blocks.throttle(gr.sizeof_float*1, samp_rate,True)
+        self.qtgui_sink_x_0 = qtgui.sink_f(
+        	1024, #fftsize
+        	firdes.WIN_BLACKMAN_hARRIS, #wintype
+        	0, #fc
+        	samp_rate, #bw
+        	"", #name
+        	True, #plotfreq
+        	True, #plotwaterfall
+        	True, #plottime
+        	True, #plotconst
+        )
+        self.qtgui_sink_x_0.set_update_time(1.0/10)
+        self._qtgui_sink_x_0_win = sip.wrapinstance(self.qtgui_sink_x_0.pyqwidget(), Qt.QWidget)
+        self.top_grid_layout.addWidget(self._qtgui_sink_x_0_win, 0,2,2,1)
+
+        self.qtgui_sink_x_0.enable_rf_freq(False)
+
+
+
+        self.interp_fir_filter_xxx_0 = filter.interp_fir_filter_fff(sps, (ptfun.pampt(sps,PTYPE,[k,beta,samp_rate])))
+        self.interp_fir_filter_xxx_0.declare_sample_delay(0)
+        self.blocks_vector_source_x_0 = blocks.vector_source_f(np.hstack((np.zeros(k),1,np.zeros(k))), True, 1, [])
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_float*1, samp_rate,True)
-        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_float*1)
-        self.blocks_magphase_to_complex_0_1 = blocks.magphase_to_complex(1)
-        self.blocks_magphase_to_complex_0_0 = blocks.magphase_to_complex(1)
-        self.blocks_magphase_to_complex_0 = blocks.magphase_to_complex(1)
-        self.blocks_complex_to_magphase_0_1 = blocks.complex_to_magphase(1)
-        self.blocks_complex_to_magphase_0_0 = blocks.complex_to_magphase(1)
-        self.blocks_complex_to_magphase_0 = blocks.complex_to_magphase(1)
-        self.blocks_complex_to_float_0_0_0 = blocks.complex_to_float(1)
-        self.blocks_complex_to_float_0_0 = blocks.complex_to_float(1)
-        self.blocks_complex_to_float_0 = blocks.complex_to_float(1)
-        self.blocks_add_const_vxx_0_1 = blocks.add_const_vff((2*120*3.14159/180, ))
-        self.blocks_add_const_vxx_0_0 = blocks.add_const_vff((120*3.14159/180, ))
-        self.blocks_add_const_vxx_0 = blocks.add_const_vff((0, ))
-        self.analog_sig_source_x_0_1 = analog.sig_source_c(samp_rate, analog.GR_COS_WAVE, f0, 1, 0)
-        self.analog_sig_source_x_0_0 = analog.sig_source_c(samp_rate, analog.GR_COS_WAVE, f0, 1, 0)
-        self.analog_sig_source_x_0 = analog.sig_source_c(samp_rate, analog.GR_COS_WAVE, f0, 1, 0)
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.analog_sig_source_x_0, 0), (self.blocks_complex_to_magphase_0, 0))
-        self.connect((self.analog_sig_source_x_0_0, 0), (self.blocks_complex_to_magphase_0_0, 0))
-        self.connect((self.analog_sig_source_x_0_1, 0), (self.blocks_complex_to_magphase_0_1, 0))
-        self.connect((self.blocks_add_const_vxx_0, 0), (self.blocks_magphase_to_complex_0, 1))
-        self.connect((self.blocks_add_const_vxx_0_0, 0), (self.blocks_magphase_to_complex_0_0, 1))
-        self.connect((self.blocks_add_const_vxx_0_1, 0), (self.blocks_magphase_to_complex_0_1, 1))
-        self.connect((self.blocks_complex_to_float_0, 1), (self.blocks_null_sink_0, 2))
-        self.connect((self.blocks_complex_to_float_0, 0), (self.blocks_throttle_0_1, 0))
-        self.connect((self.blocks_complex_to_float_0_0, 1), (self.blocks_null_sink_0, 1))
-        self.connect((self.blocks_complex_to_float_0_0, 0), (self.blocks_throttle_0_0, 0))
-        self.connect((self.blocks_complex_to_float_0_0_0, 1), (self.blocks_null_sink_0, 0))
-        self.connect((self.blocks_complex_to_float_0_0_0, 0), (self.blocks_throttle_0, 0))
-        self.connect((self.blocks_complex_to_magphase_0, 1), (self.blocks_add_const_vxx_0, 0))
-        self.connect((self.blocks_complex_to_magphase_0, 0), (self.blocks_magphase_to_complex_0, 0))
-        self.connect((self.blocks_complex_to_magphase_0_0, 1), (self.blocks_add_const_vxx_0_0, 0))
-        self.connect((self.blocks_complex_to_magphase_0_0, 0), (self.blocks_magphase_to_complex_0_0, 0))
-        self.connect((self.blocks_complex_to_magphase_0_1, 1), (self.blocks_add_const_vxx_0_1, 0))
-        self.connect((self.blocks_complex_to_magphase_0_1, 0), (self.blocks_magphase_to_complex_0_1, 0))
-        self.connect((self.blocks_magphase_to_complex_0, 0), (self.blocks_complex_to_float_0, 0))
-        self.connect((self.blocks_magphase_to_complex_0_0, 0), (self.blocks_complex_to_float_0_0, 0))
-        self.connect((self.blocks_magphase_to_complex_0_1, 0), (self.blocks_complex_to_float_0_0_0, 0))
-        self.connect((self.blocks_throttle_0, 0), (self.qtgui_time_sink_x_0, 0))
-        self.connect((self.blocks_throttle_0_0, 0), (self.qtgui_time_sink_x_0, 1))
-        self.connect((self.blocks_throttle_0_1, 0), (self.qtgui_time_sink_x_0, 2))
+        self.connect((self.blocks_throttle_0, 0), (self.interp_fir_filter_xxx_0, 0))
+        self.connect((self.blocks_vector_source_x_0, 0), (self.blocks_throttle_0, 0))
+        self.connect((self.interp_fir_filter_xxx_0, 0), (self.qtgui_sink_x_0, 0))
+        self.connect((self.interp_fir_filter_xxx_0, 0), (self.qtgui_time_sink_x_0, 0))
 
     def closeEvent(self, event):
         self.settings = Qt.QSettings("GNU Radio", "top_block")
         self.settings.setValue("geometry", self.saveGeometry())
         event.accept()
+
+    def get_sps(self):
+        return self.sps
+
+    def set_sps(self, sps):
+        self.sps = sps
+        self.interp_fir_filter_xxx_0.set_taps((ptfun.pampt(self.sps,self.PTYPE,[self.k,self.beta,self.samp_rate])))
 
     def get_samp_rate(self):
         return self.samp_rate
@@ -176,21 +191,38 @@ class top_block(gr.top_block, Qt.QWidget):
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
         self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
-        self.blocks_throttle_0_1.set_sample_rate(self.samp_rate)
-        self.blocks_throttle_0_0.set_sample_rate(self.samp_rate)
+        self.qtgui_sink_x_0.set_frequency_range(0, self.samp_rate)
+        self.interp_fir_filter_xxx_0.set_taps((ptfun.pampt(self.sps,self.PTYPE,[self.k,self.beta,self.samp_rate])))
         self.blocks_throttle_0.set_sample_rate(self.samp_rate)
-        self.analog_sig_source_x_0_1.set_sampling_freq(self.samp_rate)
-        self.analog_sig_source_x_0_0.set_sampling_freq(self.samp_rate)
-        self.analog_sig_source_x_0.set_sampling_freq(self.samp_rate)
 
-    def get_f0(self):
-        return self.f0
+    def get_ptype(self):
+        return self.ptype
 
-    def set_f0(self, f0):
-        self.f0 = f0
-        self.analog_sig_source_x_0_1.set_frequency(self.f0)
-        self.analog_sig_source_x_0_0.set_frequency(self.f0)
-        self.analog_sig_source_x_0.set_frequency(self.f0)
+    def set_ptype(self, ptype):
+        self.ptype = ptype
+
+    def get_k(self):
+        return self.k
+
+    def set_k(self, k):
+        self.k = k
+        self.interp_fir_filter_xxx_0.set_taps((ptfun.pampt(self.sps,self.PTYPE,[self.k,self.beta,self.samp_rate])))
+        self.blocks_vector_source_x_0.set_data(np.hstack((np.zeros(self.k),1,np.zeros(self.k))), [])
+
+    def get_beta(self):
+        return self.beta
+
+    def set_beta(self, beta):
+        self.beta = beta
+        self.interp_fir_filter_xxx_0.set_taps((ptfun.pampt(self.sps,self.PTYPE,[self.k,self.beta,self.samp_rate])))
+
+    def get_PTYPE(self):
+        return self.PTYPE
+
+    def set_PTYPE(self, PTYPE):
+        self.PTYPE = PTYPE
+        self._PTYPE_callback(self.PTYPE)
+        self.interp_fir_filter_xxx_0.set_taps((ptfun.pampt(self.sps,self.PTYPE,[self.k,self.beta,self.samp_rate])))
 
 
 def main(top_block_cls=top_block, options=None):
