@@ -120,7 +120,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(560, 12)</value>
+      <value>(704, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -147,7 +147,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(640, 12)</value>
+      <value>(784, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -174,7 +174,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(712, 12)</value>
+      <value>(856, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -186,7 +186,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>20000</value>
+      <value>64000</value>
     </param>
   </block>
   <block>
@@ -213,7 +213,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>5</value>
+      <value>16</value>
     </param>
   </block>
   <block>
@@ -224,7 +224,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>1000</value>
+      <value>200</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -277,6 +277,96 @@
     <param>
       <key>widget</key>
       <value>counter_slider</value>
+    </param>
+  </block>
+  <block>
+    <key>variable_qtgui_range</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>4000</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(560, 8)</value>
+    </param>
+    <param>
+      <key>gui_hint</key>
+      <value>1,0,1,2</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>fc</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>Center Frequency</value>
+    </param>
+    <param>
+      <key>min_len</key>
+      <value>200</value>
+    </param>
+    <param>
+      <key>orient</key>
+      <value>Qt.Horizontal</value>
+    </param>
+    <param>
+      <key>start</key>
+      <value>-16000</value>
+    </param>
+    <param>
+      <key>step</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>stop</key>
+      <value>16000</value>
+    </param>
+    <param>
+      <key>rangeType</key>
+      <value>float</value>
+    </param>
+    <param>
+      <key>widget</key>
+      <value>counter_slider</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(936, 12)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>k</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>5</value>
     </param>
   </block>
   <block>
@@ -630,7 +720,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(560, 76)</value>
+      <value>(704, 76)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -643,6 +733,37 @@
     <param>
       <key>import</key>
       <value>import ptfun as pt</value>
+    </param>
+  </block>
+  <block>
+    <key>import</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(784, 76)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>import_0_0</value>
+    </param>
+    <param>
+      <key>import</key>
+      <value>import numpy as np</value>
     </param>
   </block>
   <block>
@@ -748,7 +869,7 @@
     </param>
     <param>
       <key>taps</key>
-      <value>pt.pampt(Usamp,'sinc',[5,2.6,Fs1])</value>
+      <value>2*np.cos(2*np.pi*fc/Fs3*np.arange(-k*Usamp,k*Usamp))*pt.pampt(Usamp,'sinc',[k,2.6,Fs3])</value>
     </param>
     <param>
       <key>type</key>
