@@ -5,7 +5,7 @@ import copy
 class sigWave:
     """ Class for 'waveform' signals """
     type = 'waveform'
-    def __init__(self, sig, Fs=8000, t0=0):
+    def __init__(self, sig, Fs=8000, t0=0, signame='Signal'):
         """
         sig: real or complex-valued waveform samples
         Fs: sampling rate (default 8000 samples/sec)
@@ -17,6 +17,7 @@ class sigWave:
         self.Nsamp = len(self.sig)
         self.tlen = self.Nsamp/float(self.Fs)
         self.tend = self.t0 + (self.Nsamp-1)/float(self.Fs)
+        self.signame = signame
 
     def __len__(self):
         return self.Nsamp    # Returns length in samples

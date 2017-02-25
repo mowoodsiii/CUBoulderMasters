@@ -5,14 +5,43 @@ from pylab import *
 import numpy as np
 import matplotlib.pyplot as plt
 
-def quickplot(plotx1,ploty1,style1="b-",plotx2=[],ploty2=[],style2="or",title="",xname="",yname="",figx=10,figy=4):
+def quickplot(plotx1,ploty1,style1="b-",plotx2=[],ploty2=[],style2="or",title="",xname="",yname="",interval=[],figdim=[14,4]):
+    figx=figdim[0]
+    figy=figdim[1]
     plt.figure(figsize=(figx,figy))
     plotx1=np.asarray(plotx1)
     ploty1=np.asarray(ploty1)
+    title_interval=""
+    if(len(interval)==2):
+        direction = interval[0]
+        interval = interval[1]
+        title_interval = str(direction).title()+" "+str(interval)+" samples of "
+        if(plotx2!=[]):
+            dataratio=round(len(plotx1)/float(len(plotx2)))
+        else:
+            dataratio=1
+        if(direction=='first'):
+            plotx1 = plotx1[0:interval*dataratio]
+            ploty1 = ploty1[0:interval*dataratio]
+            if(plotx2!=[]):
+                plotx2 = plotx2[0:interval]
+                ploty2 = ploty2[0:interval]
+        elif(direction=='last'):
+            plotx1 = plotx1[len(plotx1)-interval*dataratio:]
+            ploty1 = ploty1[len(ploty1)-interval*dataratio:]
+            if(plotx2!=[]):
+                plotx2 = plotx2[len(plotx2)-interval:]
+                ploty2 = ploty2[len(ploty2)-interval:]
+        elif(direction=='middle'):
+            plotx1 = plotx1[int((len(plotx1)/float(2))-((interval*dataratio)/float(2))):int((len(plotx1)/float(2))+((interval*dataratio)/float(2)))]
+            ploty1 = ploty1[int((len(ploty1)/float(2))-((interval*dataratio)/float(2))):int((len(ploty1)/float(2))+((interval*dataratio)/float(2)))]
+            if(plotx2!=[]):
+                plotx2 = plotx2[int((len(plotx2)/float(2))-(interval/float(2))):int((len(plotx2)/float(2))+(interval/float(2)))]
+                ploty2 = ploty2[int((len(ploty2)/float(2))-(interval/float(2))):int((len(ploty2)/float(2))+(interval/float(2)))]
     plt.plot(plotx1,ploty1,style1,plotx2,ploty2,style2)
     plt.xlabel(xname)
     plt.ylabel(yname)
-    plt.title(title)
+    plt.title(title_interval+title)
     try:
         maxx=np.amax(concatenate([[np.amax(plotx1)],[np.amax(plotx2)]]))
     except ValueError:

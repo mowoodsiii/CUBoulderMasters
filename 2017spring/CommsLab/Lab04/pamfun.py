@@ -76,7 +76,7 @@ def pam10(sig_an, Fs, ptype, pparms=[]):
 
     return ecen.sigWave(st, Fs, t0)  # Return waveform from sigWave class
 
-def pam11(sig_an, Fs, ptype, pparms=[]):
+def pam11(sig_an, Fs, ptype, pparms=[], plotparms=[]):
     """
     Pulse amplitude modulation: a_n -> s(t), -TB/2<=t<(N-1/2)*TB,
     V1.1 for ’man’, ’rcf’, ’rect’, ’sinc’, and ’tri’ pulse types.
@@ -146,7 +146,7 @@ def pam11(sig_an, Fs, ptype, pparms=[]):
     if (ptype=='rect' or ptype=='tri' or ptype=='man'):        # Rectangular p(t)
         ix = where(logical_and(ttp>=kL/float(FB), ttp<kR/float(FB)))[0]
         if(ptype=='man'):
-            pt[ix] = concatenate([-1*ones(int(len(ix)/2)),ones(len(ix)-int(len(ix)/2))])
+            pt[ix] = concatenate([-1*ones(int(len(ix)/2)),[0],ones(len(ix)-int(len(ix)/2))])
         else:
             pt[ix] = ones(len(ix))
         st = convolve(ast,pt)/float(Fs)  # s(t) = a_s(t)*p(t)
@@ -198,6 +198,8 @@ def pam11(sig_an, Fs, ptype, pparms=[]):
         ttan = ttp[int(Sb/2)::Sb]
     elif (ptype=='sinc' or ptype=='rcf'):
         ttan = ttp[0::Sb]
-    quickplot(ttp,st,'-b',ttan,an,'or','Interpolated Data using a '+longptype+' pulse','Time','p(t)')
+
+
+    quickplot(ttp,st,'-b',ttan,an,'or','Interpolated Data using a '+longptype+' pulse','Time','p(t)',plotparms)
 
     return ecen.sigWave(st, Fs, t0)  # Return waveform from sigWave class
