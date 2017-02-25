@@ -5,7 +5,7 @@
 # Title: Sampling Theorem
 # Author: Maurice Woods
 # Description: Lab 04
-# Generated: Tue Feb 21 17:30:58 2017
+# Generated: Tue Feb 21 20:42:07 2017
 ##################################################
 
 if __name__ == '__main__':
@@ -66,14 +66,13 @@ class top_block(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.Fs3 = Fs3 = 64000
         self.Fs2 = Fs2 = 4000
         self.waveform = waveform = 102
         self.k = k = 5
         self.fc = fc = Fs2
         self.f0 = f0 = 200
         self.Usamp = Usamp = 16
-        self.Fs4 = Fs4 = Fs3
+        self.Fs3 = Fs3 = 64000
         self.Fs1 = Fs1 = 32000
         self.Dsamp = Dsamp = 8
 
@@ -107,9 +106,6 @@ class top_block(gr.top_block, Qt.QWidget):
         self._f0_range = Range(-5000, 5000, 1, 200, 200)
         self._f0_win = RangeWidget(self._f0_range, self.set_f0, 'Initial Frequency', "counter_slider", float)
         self.top_grid_layout.addWidget(self._f0_win, 1,0,1,2)
-        self._Fs4_range = Range(Fs1, Fs3*10, 0.01, Fs3, 200)
-        self._Fs4_win = RangeWidget(self._Fs4_range, self.set_Fs4, 'Fs4', "counter_slider", float)
-        self.top_grid_layout.addWidget(self._Fs4_win, 1,2,1,2)
         self.qtgui_time_sink_x_3 = qtgui.time_sink_f(
         	1024, #size
         	Fs3, #samp_rate
@@ -305,16 +301,16 @@ class top_block(gr.top_block, Qt.QWidget):
         self.fir_filter_xxx_0 = filter.fir_filter_fff(Dsamp, (1, ))
         self.fir_filter_xxx_0.declare_sample_delay(0)
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_float*1, Fs1,True)
-        self.blocks_multiply_xx_0 = blocks.multiply_vff(1)
-        self.analog_sig_source_x_0_0 = analog.sig_source_f(Fs4, waveform, f0, 1, 0)
-        self.analog_sig_source_x_0 = analog.sig_source_f(Fs1, waveform, f0, 1, 0)
+        self.blocks_add_xx_0 = blocks.add_vff(1)
+        self.analog_sig_source_x_0_0 = analog.sig_source_f(Fs1, waveform, f0-200, 1, 0)
+        self.analog_sig_source_x_0 = analog.sig_source_f(Fs1, waveform, f0+200, 1, 0)
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.analog_sig_source_x_0, 0), (self.blocks_multiply_xx_0, 0))
-        self.connect((self.analog_sig_source_x_0_0, 0), (self.blocks_multiply_xx_0, 1))
-        self.connect((self.blocks_multiply_xx_0, 0), (self.blocks_throttle_0, 0))
+        self.connect((self.analog_sig_source_x_0, 0), (self.blocks_add_xx_0, 0))
+        self.connect((self.analog_sig_source_x_0_0, 0), (self.blocks_add_xx_0, 1))
+        self.connect((self.blocks_add_xx_0, 0), (self.blocks_throttle_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.fir_filter_xxx_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.fir_filter_xxx_0, 0), (self.interp_fir_filter_xxx_0, 0))
@@ -327,16 +323,6 @@ class top_block(gr.top_block, Qt.QWidget):
         self.settings = Qt.QSettings("GNU Radio", "top_block")
         self.settings.setValue("geometry", self.saveGeometry())
         event.accept()
-
-    def get_Fs3(self):
-        return self.Fs3
-
-    def set_Fs3(self, Fs3):
-        self.Fs3 = Fs3
-        self.set_Fs4(self.Fs3)
-        self.qtgui_time_sink_x_3.set_samp_rate(self.Fs3)
-        self.qtgui_time_sink_x_2.set_samp_rate(self.Fs3)
-        self.interp_fir_filter_xxx_0_0.set_taps((2*np.cos(2*np.pi*self.fc/self.Fs3*np.arange(-2*self.k*self.Usamp,2*self.k*self.Usamp))*pt.pampt(self.Usamp,'sinc',[self.k,2.6,self.Fs3])))
 
     def get_Fs2(self):
         return self.Fs2
@@ -374,8 +360,8 @@ class top_block(gr.top_block, Qt.QWidget):
 
     def set_f0(self, f0):
         self.f0 = f0
-        self.analog_sig_source_x_0_0.set_frequency(self.f0)
-        self.analog_sig_source_x_0.set_frequency(self.f0)
+        self.analog_sig_source_x_0_0.set_frequency(self.f0-200)
+        self.analog_sig_source_x_0.set_frequency(self.f0+200)
 
     def get_Usamp(self):
         return self.Usamp
@@ -384,12 +370,14 @@ class top_block(gr.top_block, Qt.QWidget):
         self.Usamp = Usamp
         self.interp_fir_filter_xxx_0_0.set_taps((2*np.cos(2*np.pi*self.fc/self.Fs3*np.arange(-2*self.k*self.Usamp,2*self.k*self.Usamp))*pt.pampt(self.Usamp,'sinc',[self.k,2.6,self.Fs3])))
 
-    def get_Fs4(self):
-        return self.Fs4
+    def get_Fs3(self):
+        return self.Fs3
 
-    def set_Fs4(self, Fs4):
-        self.Fs4 = Fs4
-        self.analog_sig_source_x_0_0.set_sampling_freq(self.Fs4)
+    def set_Fs3(self, Fs3):
+        self.Fs3 = Fs3
+        self.qtgui_time_sink_x_3.set_samp_rate(self.Fs3)
+        self.qtgui_time_sink_x_2.set_samp_rate(self.Fs3)
+        self.interp_fir_filter_xxx_0_0.set_taps((2*np.cos(2*np.pi*self.fc/self.Fs3*np.arange(-2*self.k*self.Usamp,2*self.k*self.Usamp))*pt.pampt(self.Usamp,'sinc',[self.k,2.6,self.Fs3])))
 
     def get_Fs1(self):
         return self.Fs1
@@ -398,6 +386,7 @@ class top_block(gr.top_block, Qt.QWidget):
         self.Fs1 = Fs1
         self.qtgui_time_sink_x_0.set_samp_rate(self.Fs1)
         self.blocks_throttle_0.set_sample_rate(self.Fs1)
+        self.analog_sig_source_x_0_0.set_sampling_freq(self.Fs1)
         self.analog_sig_source_x_0.set_sampling_freq(self.Fs1)
 
     def get_Dsamp(self):
