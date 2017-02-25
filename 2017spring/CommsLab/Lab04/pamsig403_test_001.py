@@ -5,7 +5,7 @@
 # Title: PAM Signal Test 1
 # Author: Maurice Woods
 # Description: Lab 04
-# Generated: Sat Feb 25 09:26:11 2017
+# Generated: Sat Feb 25 14:08:37 2017
 ##################################################
 
 if __name__ == '__main__':
