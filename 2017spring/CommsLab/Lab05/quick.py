@@ -6,6 +6,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def quickplot(plotx1,ploty1,style1="b-",plotx2=[],ploty2=[],style2="or",title="",xname="",yname="",interval=[],figdim=[14,4]):
+    """
+    Plot a data series,
+    V2.1 Includes zoom/window option
+    >>>>> void = quickplot(plotx1,ploty1,style1,plotx2,ploty2,style2,title,xname,yname,interval,figdim) <<<<<
+    where   plotx1: independent variable of sequence 1
+            ploty1: dependent variable of sequence 1
+            style1: line style of sequence 1                                (default: blue line, 'b-')
+            plotx2: independent variable of sequence 2                      (default: empty [])
+            ploty2: dependent variable of sequence 2                        (default: empty [])
+            style2: line style of sequence 2                                (default: red circles, 'or')
+            title:  plot title                                              (default: blank '')
+            xname:  x-axis label                                            (default: blank '')
+            yname:  y-axis label                                            (default: blank '')
+            plotparms = [direction, interval]:  Zoom/window options         (default: empty)
+                direction: where to window 'first', 'last', or 'middle'
+                interval:  width of window (in datapoints)
+            figdim = [figx,figy]: figure print dimensions                   (default: [14,4])
+                figx:      figure width
+                figy:      figure height
+    """
     figx=figdim[0]
     figy=figdim[1]
     plt.figure(figsize=(figx,figy))

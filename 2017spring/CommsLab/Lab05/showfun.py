@@ -156,6 +156,12 @@ def showpsd0(sig_xt, ff_lim, N):
     N = int(min(N, len(xt))) # N <= length(xt) needed
     NN = int(floor(len(xt)/float(N))) # Number of blocks of length N
 
+    f1 = ff_lim[0]
+    f2 = ff_lim[1]
+    if(f1 > f2):
+        print("ERROR: f1 > f2")
+        return
+
     xt = xt[0:N*NN] # Truncate x(t) to NN blocks
     xNN = reshape(xt,(NN,N)) # NN row vectors of length N
 
@@ -163,10 +169,10 @@ def showpsd0(sig_xt, ff_lim, N):
     Sxf = np.power(abs(fft(xNN)),2.0) # NN FFTs, mag squared
     if NN > 1:
         Sxf = sum(Sxf, axis=0)/float(NN)
-        Sxf = Sxf/float(N*Fs) # Correction factor DFT -> PSD
-        Sxf = reshape(Sxf,size(Sxf))
-        ff = Fs*array(arange(N),int64)/float(N) # Frequency axis
-    if ff_lim[0] < 0: # Negative f1 case
+    Sxf = Sxf/float(N*Fs) # Correction factor DFT -> PSD
+    Sxf = reshape(Sxf,size(Sxf))
+    ff = Fs*array(arange(N),int64)/float(N) # Frequency axis
+    if f1 < 0: # Negative f1 case
         ixp = where(ff<0.5*Fs)[0] # Indexes of pos frequencies
         ixn = where(ff>=0.5*Fs)[0] # Indexes of neg frequencies
         ff = hstack((ff[ixn]-Fs,ff[ixp])) # New freq axis
@@ -175,19 +181,90 @@ def showpsd0(sig_xt, ff_lim, N):
 
     # ***** Determine maximum, trim to ff_lim *****
     maxSxf = max(Sxf) # Maximum of S_x(f)
-    ixf = where(logical_and(ff>=ff_lim[0], ff<ff_lim[1]))[0]
+    ixf = where(logical_and(ff>=f1, ff<f2))[0]
     ff = ff[ixf] # Trim to ff_lim specs
     Sxf = Sxf[ixf]
 
     # ***** Plot PSD *****
-    strgt = ’PSD Approximation, $F_s=${:d} Hz’.format(Fs)
-    strgt = strgt + ’, $\\Delta_f=${:.3g} Hz’.format(df)
-    strgt = strgt + ’, $NN=${:d}, $N=${:d}’.format(NN, N)
-    f1 = figure()
-    af1 = f1.add_subplot(111)
-    af1.plot(ff, Sxf, ’-b’)
-    af1.grid()
-    af1.set_xlabel(’f [Hz]’)
-    af1.set_ylabel(strgy)
-    af1.set_title(strgt)
+    strgt = 'PSD Approximation, $F_s=${:d} Hz'.format(Fs)
+    strgt = strgt + ', $\\Delta_f=${:.3g} Hz'.format(df)
+    strgt = strgt + ', $NN=${:d}, $N=${:d}'.format(NN, N)
+    quick.quickplot(ff,Sxf,'-b',[],[],'',strgt,'f [Hz]','Y AXIS')
+    show()
+
+def showpsd1(sig_xt, ff_lim, N, subject=''):
+    """
+    Plot (DFT/FFT approximation to) power spectral density (PSD) of x(t).
+    Displays S_x(f) either linear and absolute or normalized in dB.
+    >>>>> showpsd(sig_xt, ff_lim, N) <<<<<
+    where sig_xt: waveform from class sigWave
+        sig_xt.signal(): sampled CT signal x(t)
+        sig_xt.get_Fs(): sampling rate of x(t)
+        ff_lim = [f1,f2,llim]
+        f1: lower frequency limit for display
+        f2: upper frequency limit for display
+        llim = 0: display S_x(f) linear and absolute
+        llim < 0: display 10*log_{10}(S_x(f))/max(S_x(f)) in dB with lower display limit llim dB
+        N: blocklength
+    """
+
+    # ***** Determine number of blocks, prepare x(t) *****
+    xt = sig_xt.signal() # Get x(t)
+    Fs = sig_xt.get_Fs() # Sampling rate of x(t)
+    N = int(min(N, len(xt))) # blocklength; N <= length(xt) needed
+    NN = int(floor(len(xt)/float(N))) # Number of blocks of length N
+
+    f1 = ff_lim[0]
+    f2 = ff_lim[1]
+    llim = ff_lim[2]
+    if(f1 > f2):
+        print("ERROR: f1 > f2")
+        return
+    xt = xt[0:N*NN] # Truncate x(t) to NN blocks
+    xNN = reshape(xt,(NN,N)) # NN row vectors of length N
+
+    # ***** Compute DFTs/FFTs, average over NN blocks *****
+    Sxf = np.power(abs(fft(xNN)),2.0) # NN FFTs, mag squared
+    if NN > 1:
+        Sxf = sum(Sxf, axis=0)/float(NN)
+    Sxf = Sxf/float(N*Fs) # Correction factor DFT -> PSD
+    Sxf = reshape(Sxf,size(Sxf))
+    ff = Fs*array(arange(N),int64)/float(N) # Frequency axis
+    if f1 < 0: # Negative f1 case
+        ixp = where(ff<0.5*Fs)[0] # Indexes of pos frequencies
+        ixn = where(ff>=0.5*Fs)[0] # Indexes of neg frequencies
+        ff = hstack((ff[ixn]-Fs,ff[ixp])) # New freq axis
+        Sxf = hstack((Sxf[ixn],Sxf[ixp])) # Corresponding S_x(f)
+    df = Fs/float(N) # Delta_f, freq sample spacing
+
+    # ***** Determine the total power *****
+    P_total = sum(Sxf)*df
+
+    # ***** Determine maximum, trim to ff_lim *****
+    maxSxf = max(Sxf) # Maximum of S_x(f)
+    ixf = where(logical_and(ff>=f1, ff<f2))[0]
+    ff = ff[ixf] # Trim to ff_lim specs
+    Sxf = Sxf[ixf]
+
+    # ***** Determine the power over the ff_lim interval *****
+    P_ff_lim = sum(Sxf)*df
+
+    # ***** Convert to normalized dB based on llim
+    if(llim<0):
+        Sxf = 20*log10(Sxf)/float(maxSxf)
+        strgy = "$S_x(f)/|S_x(f)| [dB]$"
+    else:
+        Sxf = abs(Sxf)
+        strgy = "$S_x(f)$"
+
+    # ***** Plot PSD *****
+    strgt = 'PSD Approximation'
+    if(subject!=''):
+        strgt = strgt + ' of '+subject
+    strgt = strgt + ':\n$F_s=${:d} Hz'.format(Fs)
+    strgt = strgt + ',    $\\Delta_f=${:.3g} Hz'.format(df)
+    strgt = strgt + ',    $NN=${:d},    $N=${:d}'.format(NN, N)
+    strgt = strgt + '\n' + '$P(-\infty,\infty)$={:.3g}W'.format(P_total)
+    strgt = strgt + ',          $P({:d}Hz,{:d}Hz)$ = {:.3g}W = {:.3g}% of $P(-\infty,\infty)$'.format(int(f1),int(f2),P_ff_lim,100*P_ff_lim/float(P_total))
+    quick.quickplot(ff,Sxf,'-b',[],[],'',strgt,'f [Hz]','$S_x(f)$')
     show()

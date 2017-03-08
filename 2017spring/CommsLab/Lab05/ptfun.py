@@ -4,11 +4,11 @@
 # Functions for gnuradio-companion PAM p(t) generation
 import numpy as np
 from pylab import *
-def pampt(sps, ptype, pparms=[]):
+def pampt(sps, ptype, pparms=[], duty=1):
     """
     PAM pulse p(t) = p(n*TB/sps) generation
     >>>>> pt = pampt(sps, ptype, pparms) <<<<<
-    where  sps:
+    where  sps: samples per symbol
         ptype: pulse type ('rect', 'sinc', 'tri')
         pparms not used for 'rect', 'tri'
         pparms = [k, beta, Fs] for sinc
@@ -16,17 +16,16 @@ def pampt(sps, ptype, pparms=[]):
         beta:  Kaiser window parameter for 'sinc'
         Fs:    Sampling rate
         pt:    pulse p(t) at t=n*TB/sps
-    Note: In terms of sampling rate Fs and baud rate FB,sps = Fs/FB
+    Note: In terms of sampling rate Fs and baud rate FB, sps = Fs/FB
     """
     if ptype is 'rect':
-        pt = np.ones(sps)
+        pt = concatenate([np.ones(sps),np.zeros(sps*(duty-1))])
     elif ptype is 'tri':
         triarray = np.arange(0,1,(1/float(sps)))[1:]
         pt = np.concatenate([triarray,[1],triarray[::-1]])
     elif ptype is 'sinc':
         k = pparms[0]
         beta = pparms[1]
-        Fs = pparms[2]
 
         nn = np.arange(-2*k*sps,2*k*sps)
         pt = sinc((1/float(sps))*nn)
