@@ -62,6 +62,19 @@ def quickplot(plotx1,ploty1,style1="b-",plotx2=[],ploty2=[],style2="or",title=""
     plt.xlabel(xname)
     plt.ylabel(yname)
     plt.title(title_interval+title)
+
+    try:
+        plotx1[plotx1==inf]=0
+        plotx1[plotx1==-inf]=0
+        ploty1[ploty1==inf]=0
+        ploty1[ploty1==-inf]=0
+        plotx2[plotx2==inf]=0
+        plotx2[plotx2==-inf]=0
+        ploty2[ploty2==inf]=0
+        ploty2[ploty2==-inf]=0
+    except IndexError:
+        pass
+
     try:
         maxx=np.amax(concatenate([[np.amax(plotx1)],[np.amax(plotx2)]]))
     except ValueError:
