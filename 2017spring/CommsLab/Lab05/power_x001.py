@@ -5,7 +5,7 @@
 # Title: Power/PSD Example 1
 # Author: Maurice Woods
 # Description: Lab 05
-# Generated: Wed Mar  8 17:16:54 2017
+# Generated: Wed Mar  8 22:24:55 2017
 ##################################################
 
 if __name__ == '__main__':
@@ -68,7 +68,7 @@ class power_x001(gr.top_block, Qt.QWidget):
         self.FB = FB = 32000
         self.sps = sps = Fs/FB
         self.ptype = ptype = 'rect'
-        self.pparms = pparms = []
+        self.pparms = pparms = [10,0.2]
         self.fL_div_by_FB = fL_div_by_FB = 2
 
         ##################################################
@@ -76,7 +76,7 @@ class power_x001(gr.top_block, Qt.QWidget):
         ##################################################
         self._fL_div_by_FB_range = Range(0, 8, 0.5, 2, 200)
         self._fL_div_by_FB_win = RangeWidget(self._fL_div_by_FB_range, self.set_fL_div_by_FB, 'fL/FB', "counter_slider", float)
-        self.top_grid_layout.addWidget(self._fL_div_by_FB_win, 0,0,1,2)
+        self.top_grid_layout.addWidget(self._fL_div_by_FB_win, 0,0,2,1)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
         	1024, #size
         	Fs, #samp_rate
@@ -90,8 +90,8 @@ class power_x001(gr.top_block, Qt.QWidget):
 
         self.qtgui_time_sink_x_0.enable_tags(-1, True)
         self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
-        self.qtgui_time_sink_x_0.enable_autoscale(False)
-        self.qtgui_time_sink_x_0.enable_grid(False)
+        self.qtgui_time_sink_x_0.enable_autoscale(True)
+        self.qtgui_time_sink_x_0.enable_grid(True)
         self.qtgui_time_sink_x_0.enable_axis_labels(True)
         self.qtgui_time_sink_x_0.enable_control_panel(False)
 
@@ -123,38 +123,7 @@ class power_x001(gr.top_block, Qt.QWidget):
             self.qtgui_time_sink_x_0.set_line_alpha(i, alphas[i])
 
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_time_sink_x_0_win)
-        self.qtgui_number_sink_0 = qtgui.number_sink(
-            gr.sizeof_float,
-            0,
-            qtgui.NUM_GRAPH_HORIZ,
-            1
-        )
-        self.qtgui_number_sink_0.set_update_time(0.10)
-        self.qtgui_number_sink_0.set_title("")
-
-        labels = ['', '', '', '', '',
-                  '', '', '', '', '']
-        units = ['', '', '', '', '',
-                 '', '', '', '', '']
-        colors = [("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"),
-                  ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black")]
-        factor = [1, 1, 1, 1, 1,
-                  1, 1, 1, 1, 1]
-        for i in xrange(1):
-            self.qtgui_number_sink_0.set_min(i, -1)
-            self.qtgui_number_sink_0.set_max(i, 1)
-            self.qtgui_number_sink_0.set_color(i, colors[i][0], colors[i][1])
-            if len(labels[i]) == 0:
-                self.qtgui_number_sink_0.set_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_number_sink_0.set_label(i, labels[i])
-            self.qtgui_number_sink_0.set_unit(i, units[i])
-            self.qtgui_number_sink_0.set_factor(i, factor[i])
-
-        self.qtgui_number_sink_0.enable_autoscale(False)
-        self._qtgui_number_sink_0_win = sip.wrapinstance(self.qtgui_number_sink_0.pyqwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_number_sink_0_win)
+        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_win, 2,0,1,1)
         self.qtgui_freq_sink_x_0 = qtgui.freq_sink_f(
         	1024, #size
         	firdes.WIN_BLACKMAN_hARRIS, #wintype
@@ -167,8 +136,8 @@ class power_x001(gr.top_block, Qt.QWidget):
         self.qtgui_freq_sink_x_0.set_y_axis(-140, 10)
         self.qtgui_freq_sink_x_0.set_y_label('Relative Gain', 'dB')
         self.qtgui_freq_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, 0.0, 0, "")
-        self.qtgui_freq_sink_x_0.enable_autoscale(False)
-        self.qtgui_freq_sink_x_0.enable_grid(False)
+        self.qtgui_freq_sink_x_0.enable_autoscale(True)
+        self.qtgui_freq_sink_x_0.enable_grid(True)
         self.qtgui_freq_sink_x_0.set_fft_average(1.0)
         self.qtgui_freq_sink_x_0.enable_axis_labels(True)
         self.qtgui_freq_sink_x_0.enable_control_panel(False)
@@ -197,16 +166,47 @@ class power_x001(gr.top_block, Qt.QWidget):
             self.qtgui_freq_sink_x_0.set_line_alpha(i, alphas[i])
 
         self._qtgui_freq_sink_x_0_win = sip.wrapinstance(self.qtgui_freq_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_freq_sink_x_0_win)
+        self.top_grid_layout.addWidget(self._qtgui_freq_sink_x_0_win, 2,1,1,1)
         self.low_pass_filter_0_0 = filter.fir_filter_fff(64, firdes.low_pass(
         	1, Fs, 10, 10, firdes.WIN_HAMMING, 6.76))
         self.low_pass_filter_0 = filter.fir_filter_fff(1, firdes.low_pass(
         	1, Fs, fL_div_by_FB*FB, 3200, firdes.WIN_HAMMING, 6.76))
-        self.interp_fir_filter_xxx_0 = filter.interp_fir_filter_fff(16, (ptfun.pampt(sps,ptype)))
+        self.interp_fir_filter_xxx_0 = filter.interp_fir_filter_fff(16, (ptfun.pampt(sps,ptype,pparms)))
         self.interp_fir_filter_xxx_0.declare_sample_delay(0)
         self.digital_glfsr_source_x_0 = digital.glfsr_source_f(22, True, 0, 1)
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_float*1, FB,True)
         self.blocks_multiply_xx_0 = blocks.multiply_vff(1)
+        self.avg_pwr = qtgui.number_sink(
+            gr.sizeof_float,
+            0,
+            qtgui.NUM_GRAPH_HORIZ,
+            1
+        )
+        self.avg_pwr.set_update_time(0.10)
+        self.avg_pwr.set_title("Avg. Power")
+
+        labels = ['', '', '', '', '',
+                  '', '', '', '', '']
+        units = ['', '', '', '', '',
+                 '', '', '', '', '']
+        colors = [("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"),
+                  ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black")]
+        factor = [1, 1, 1, 1, 1,
+                  1, 1, 1, 1, 1]
+        for i in xrange(1):
+            self.avg_pwr.set_min(i, 0)
+            self.avg_pwr.set_max(i, 2)
+            self.avg_pwr.set_color(i, colors[i][0], colors[i][1])
+            if len(labels[i]) == 0:
+                self.avg_pwr.set_label(i, "Data {0}".format(i))
+            else:
+                self.avg_pwr.set_label(i, labels[i])
+            self.avg_pwr.set_unit(i, units[i])
+            self.avg_pwr.set_factor(i, factor[i])
+
+        self.avg_pwr.enable_autoscale(False)
+        self._avg_pwr_win = sip.wrapinstance(self.avg_pwr.pyqwidget(), Qt.QWidget)
+        self.top_grid_layout.addWidget(self._avg_pwr_win, 0,1,1,1)
 
         ##################################################
         # Connections
@@ -219,7 +219,7 @@ class power_x001(gr.top_block, Qt.QWidget):
         self.connect((self.low_pass_filter_0, 0), (self.blocks_multiply_xx_0, 1))
         self.connect((self.low_pass_filter_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.low_pass_filter_0, 0), (self.qtgui_time_sink_x_0, 0))
-        self.connect((self.low_pass_filter_0_0, 0), (self.qtgui_number_sink_0, 0))
+        self.connect((self.low_pass_filter_0_0, 0), (self.avg_pwr, 0))
 
     def closeEvent(self, event):
         self.settings = Qt.QSettings("GNU Radio", "power_x001")
@@ -251,20 +251,21 @@ class power_x001(gr.top_block, Qt.QWidget):
 
     def set_sps(self, sps):
         self.sps = sps
-        self.interp_fir_filter_xxx_0.set_taps((ptfun.pampt(self.sps,self.ptype)))
+        self.interp_fir_filter_xxx_0.set_taps((ptfun.pampt(self.sps,self.ptype,self.pparms)))
 
     def get_ptype(self):
         return self.ptype
 
     def set_ptype(self, ptype):
         self.ptype = ptype
-        self.interp_fir_filter_xxx_0.set_taps((ptfun.pampt(self.sps,self.ptype)))
+        self.interp_fir_filter_xxx_0.set_taps((ptfun.pampt(self.sps,self.ptype,self.pparms)))
 
     def get_pparms(self):
         return self.pparms
 
     def set_pparms(self, pparms):
         self.pparms = pparms
+        self.interp_fir_filter_xxx_0.set_taps((ptfun.pampt(self.sps,self.ptype,self.pparms)))
 
     def get_fL_div_by_FB(self):
         return self.fL_div_by_FB

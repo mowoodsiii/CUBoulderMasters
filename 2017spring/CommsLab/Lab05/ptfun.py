@@ -12,11 +12,10 @@ def pampt(sps, ptype, pparms=[], plot='', duty=1):
     where  sps: samples per symbol
         ptype: pulse type ('rect', 'sinc', 'tri')
         pparms not used for 'rect', 'tri'
-        pparms = [k, beta, Fs] for sinc
-        k:     "tail" truncation parameter for (truncates p(t) to -k*sps <= n < k*sps)
-        beta:  Kaiser window parameter for 'sinc'
-        Fs:    Sampling rate
-        pt:    pulse p(t) at t=n*TB/sps
+        pparms = [k, beta] for sinc
+            k:     "tail" truncation parameter for (truncates p(t) to -k*sps <= n < k*sps)
+            beta:  Kaiser window parameter for 'sinc'
+        pt: pulse p(t) at t=n*TB/sps
     Note: In terms of sampling rate Fs and baud rate FB, sps = Fs/FB
     """
     if ptype is 'rect':
@@ -54,12 +53,13 @@ def pampt(sps, ptype, pparms=[], plot='', duty=1):
         print("ERROR: ptype '",ptype,"' not recognized")
         return 0
 
-    if(ptype=='tri'):
-        sps = sps*2
-    elif(ptype=='rcf' or ptype=='sinc'):
-        sps = sps/duty
-    widthbuff = zeros(int(((sps/float(duty))-len(pt))/float(2)))
-    pt = concatenate([widthbuff,pt,widthbuff])
+    if(duty!=1):
+        if(ptype=='tri'):
+            sps = sps*2
+        elif(ptype=='rcf' or ptype=='sinc'):
+            sps = sps/duty
+        widthbuff = zeros(int(((sps/float(duty))-len(pt))/float(2)))
+        pt = concatenate([widthbuff,pt,widthbuff])
 
     if plot == 'plotpulse':
         tt=quick.quicktt(pt,sps/duty)
