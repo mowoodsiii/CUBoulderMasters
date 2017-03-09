@@ -492,7 +492,7 @@
     </param>
     <param>
       <key>taps</key>
-      <value>pampt(sps,ptype,pparms)</value>
+      <value>ptfun.pampt(sps,ptype,pparms)</value>
     </param>
     <param>
       <key>type</key>
@@ -770,7 +770,7 @@
     </param>
     <param>
       <key>import</key>
-      <value>from my_grc import pampt</value>
+      <value>import ptfun</value>
     </param>
   </block>
   <block>
