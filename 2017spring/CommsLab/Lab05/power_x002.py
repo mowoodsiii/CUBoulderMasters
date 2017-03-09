@@ -5,7 +5,7 @@
 # Title: Power/PSD Example 2
 # Author: Maurice Woods
 # Description: Lab 05
-# Generated: Wed Mar  8 01:23:54 2017
+# Generated: Thu Mar  9 03:09:31 2017
 ##################################################
 
 if __name__ == '__main__':
@@ -65,8 +65,8 @@ class power_x002(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.waveform = waveform = 102
         self.offs = offs = 0
+        self.noise_type = noise_type = 102
         self.fL = fL = 1000
         self.f0 = f0 = 200
         self.Fs = Fs = 32000
@@ -75,27 +75,9 @@ class power_x002(gr.top_block, Qt.QWidget):
         ##################################################
         # Blocks
         ##################################################
-        self._waveform_options = (102, 103, 104, )
-        self._waveform_labels = ('Cosine', 'Rectangular', 'Triangular', )
-        self._waveform_tool_bar = Qt.QToolBar(self)
-        self._waveform_tool_bar.addWidget(Qt.QLabel('Waveformm'+": "))
-        self._waveform_combo_box = Qt.QComboBox()
-        self._waveform_tool_bar.addWidget(self._waveform_combo_box)
-        for label in self._waveform_labels: self._waveform_combo_box.addItem(label)
-        self._waveform_callback = lambda i: Qt.QMetaObject.invokeMethod(self._waveform_combo_box, "setCurrentIndex", Qt.Q_ARG("int", self._waveform_options.index(i)))
-        self._waveform_callback(self.waveform)
-        self._waveform_combo_box.currentIndexChanged.connect(
-        	lambda i: self.set_waveform(self._waveform_options[i]))
-        self.top_grid_layout.addWidget(self._waveform_tool_bar, 0,0,1,2)
-        self._offs_range = Range(-1, 1, 0.01, 0, 200)
-        self._offs_win = RangeWidget(self._offs_range, self.set_offs, "offs", "counter_slider", float)
-        self.top_grid_layout.addWidget(self._offs_win, 0,3,1,1)
-        self._fL_range = Range(10, 10000, 1, 1000, 200)
+        self._fL_range = Range(10, Fs/2, 1, 1000, 200)
         self._fL_win = RangeWidget(self._fL_range, self.set_fL, 'fL', "counter_slider", float)
         self.top_grid_layout.addWidget(self._fL_win, 1,3,1,1)
-        self._f0_range = Range(0, 1000, 1, 200, 200)
-        self._f0_win = RangeWidget(self._f0_range, self.set_f0, 'f0', "counter_slider", float)
-        self.top_grid_layout.addWidget(self._f0_win, 0,2,1,1)
         self._A_range = Range(0, 2, 0.1, 1, 200)
         self._A_win = RangeWidget(self._A_range, self.set_A, "A", "counter_slider", float)
         self.top_grid_layout.addWidget(self._A_win, 1,2,1,1)
@@ -168,7 +150,7 @@ class power_x002(gr.top_block, Qt.QWidget):
                   1, 1, 1, 1, 1]
         for i in xrange(1):
             self.qtgui_number_sink_0_0.set_min(i, 0)
-            self.qtgui_number_sink_0_0.set_max(i, 2)
+            self.qtgui_number_sink_0_0.set_max(i, 4)
             self.qtgui_number_sink_0_0.set_color(i, colors[i][0], colors[i][1])
             if len(labels[i]) == 0:
                 self.qtgui_number_sink_0_0.set_label(i, "Data {0}".format(i))
@@ -199,7 +181,7 @@ class power_x002(gr.top_block, Qt.QWidget):
                   1, 1, 1, 1, 1]
         for i in xrange(1):
             self.qtgui_number_sink_0.set_min(i, 0)
-            self.qtgui_number_sink_0.set_max(i, 2)
+            self.qtgui_number_sink_0.set_max(i, 4)
             self.qtgui_number_sink_0.set_color(i, colors[i][0], colors[i][1])
             if len(labels[i]) == 0:
                 self.qtgui_number_sink_0.set_label(i, "Data {0}".format(i))
@@ -298,23 +280,50 @@ class power_x002(gr.top_block, Qt.QWidget):
 
         self._qtgui_freq_sink_x_0_win = sip.wrapinstance(self.qtgui_freq_sink_x_0.pyqwidget(), Qt.QWidget)
         self.top_grid_layout.addWidget(self._qtgui_freq_sink_x_0_win, 4,2,1,2)
+        self._offs_range = Range(-1, 1, 0.01, 0, 200)
+        self._offs_win = RangeWidget(self._offs_range, self.set_offs, "offs", "counter_slider", float)
+        self.top_grid_layout.addWidget(self._offs_win, 0,3,1,1)
+        self._noise_type_options = (103, 102, )
+        self._noise_type_labels = ('Gaussian', 'Uniform', )
+        self._noise_type_group_box = Qt.QGroupBox('Noise Type')
+        self._noise_type_box = Qt.QHBoxLayout()
+        class variable_chooser_button_group(Qt.QButtonGroup):
+            def __init__(self, parent=None):
+                Qt.QButtonGroup.__init__(self, parent)
+            @pyqtSlot(int)
+            def updateButtonChecked(self, button_id):
+                self.button(button_id).setChecked(True)
+        self._noise_type_button_group = variable_chooser_button_group()
+        self._noise_type_group_box.setLayout(self._noise_type_box)
+        for i, label in enumerate(self._noise_type_labels):
+        	radio_button = Qt.QRadioButton(label)
+        	self._noise_type_box.addWidget(radio_button)
+        	self._noise_type_button_group.addButton(radio_button, i)
+        self._noise_type_callback = lambda i: Qt.QMetaObject.invokeMethod(self._noise_type_button_group, "updateButtonChecked", Qt.Q_ARG("int", self._noise_type_options.index(i)))
+        self._noise_type_callback(self.noise_type)
+        self._noise_type_button_group.buttonClicked[int].connect(
+        	lambda i: self.set_noise_type(self._noise_type_options[i]))
+        self.top_grid_layout.addWidget(self._noise_type_group_box, 0,0,1,2)
         self.low_pass_filter_0_0_0 = filter.fir_filter_fff(1, firdes.low_pass(
         	1, Fs, 10, 10, firdes.WIN_HAMMING, 6.76))
         self.low_pass_filter_0_0 = filter.fir_filter_fff(1, firdes.low_pass(
         	1, Fs, 10, 10, firdes.WIN_HAMMING, 6.76))
         self.low_pass_filter_0 = filter.fir_filter_ccf(1, firdes.low_pass(
         	1, Fs, fL, 100, firdes.WIN_HAMMING, 6.76))
+        self._f0_range = Range(0, 1000, 1, 200, 200)
+        self._f0_win = RangeWidget(self._f0_range, self.set_f0, 'f0', "counter_slider", float)
+        self.top_grid_layout.addWidget(self._f0_win, 0,2,1,1)
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, Fs,True)
         self.blocks_multiply_xx_0 = blocks.multiply_vff(1)
         self.blocks_complex_to_mag_squared_0 = blocks.complex_to_mag_squared(1)
         self.blocks_complex_to_imag_0 = blocks.complex_to_imag(1)
         self.blocks_complex_to_float_0 = blocks.complex_to_float(1)
-        self.analog_sig_source_x_0 = analog.sig_source_c(Fs, waveform, f0, A, offs)
+        self.analog_noise_source_x_0 = analog.noise_source_c(analog.GR_UNIFORM, A, 0)
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.analog_sig_source_x_0, 0), (self.blocks_throttle_0, 0))
+        self.connect((self.analog_noise_source_x_0, 0), (self.blocks_throttle_0, 0))
         self.connect((self.blocks_complex_to_float_0, 0), (self.qtgui_histogram_sink_x_0, 0))
         self.connect((self.blocks_complex_to_imag_0, 0), (self.blocks_multiply_xx_0, 0))
         self.connect((self.blocks_complex_to_imag_0, 0), (self.blocks_multiply_xx_0, 1))
@@ -334,20 +343,18 @@ class power_x002(gr.top_block, Qt.QWidget):
         self.settings.setValue("geometry", self.saveGeometry())
         event.accept()
 
-    def get_waveform(self):
-        return self.waveform
-
-    def set_waveform(self, waveform):
-        self.waveform = waveform
-        self._waveform_callback(self.waveform)
-        self.analog_sig_source_x_0.set_waveform(self.waveform)
-
     def get_offs(self):
         return self.offs
 
     def set_offs(self, offs):
         self.offs = offs
-        self.analog_sig_source_x_0.set_offset(self.offs)
+
+    def get_noise_type(self):
+        return self.noise_type
+
+    def set_noise_type(self, noise_type):
+        self.noise_type = noise_type
+        self._noise_type_callback(self.noise_type)
 
     def get_fL(self):
         return self.fL
@@ -361,7 +368,6 @@ class power_x002(gr.top_block, Qt.QWidget):
 
     def set_f0(self, f0):
         self.f0 = f0
-        self.analog_sig_source_x_0.set_frequency(self.f0)
 
     def get_Fs(self):
         return self.Fs
@@ -374,14 +380,13 @@ class power_x002(gr.top_block, Qt.QWidget):
         self.low_pass_filter_0_0.set_taps(firdes.low_pass(1, self.Fs, 10, 10, firdes.WIN_HAMMING, 6.76))
         self.low_pass_filter_0.set_taps(firdes.low_pass(1, self.Fs, self.fL, 100, firdes.WIN_HAMMING, 6.76))
         self.blocks_throttle_0.set_sample_rate(self.Fs)
-        self.analog_sig_source_x_0.set_sampling_freq(self.Fs)
 
     def get_A(self):
         return self.A
 
     def set_A(self, A):
         self.A = A
-        self.analog_sig_source_x_0.set_amplitude(self.A)
+        self.analog_noise_source_x_0.set_amplitude(self.A)
 
 
 def main(top_block_cls=power_x002, options=None):

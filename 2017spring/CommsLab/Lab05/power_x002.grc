@@ -2090,7 +2090,7 @@
     </param>
     <param>
       <key>name</key>
-      <value>"Avg Power"</value>
+      <value>"Imaginary Power"</value>
     </param>
     <param>
       <key>nconnections</key>

@@ -305,7 +305,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>103</value>
+      <value>102</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -503,7 +503,7 @@
     </param>
     <param>
       <key>noise_type</key>
-      <value>analog.GR_GAUSSIAN</value>
+      <value>analog.GR_UNIFORM</value>
     </param>
     <param>
       <key>type</key>
