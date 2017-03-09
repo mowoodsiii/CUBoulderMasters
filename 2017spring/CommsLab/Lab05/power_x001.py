@@ -5,7 +5,7 @@
 # Title: Power/PSD Example 1
 # Author: Maurice Woods
 # Description: Lab 05
-# Generated: Thu Mar  9 00:56:33 2017
+# Generated: Thu Mar  9 01:25:38 2017
 ##################################################
 
 if __name__ == '__main__':
@@ -69,17 +69,17 @@ class power_x001(gr.top_block, Qt.QWidget):
         self.samp_rate = samp_rate = 512000
         self.ptype = ptype = 'rect'
         self.pparms = pparms = []
-        self.fL_div_by_FB = fL_div_by_FB = .5
+        self.fL_div_by_FB = fL_div_by_FB = 2
         self.FB = FB = 32000
-        self.A_noise = A_noise = 0.35
+        self.A_noise = A_noise = 1.11
 
         ##################################################
         # Blocks
         ##################################################
-        self._fL_div_by_FB_range = Range(0, 8, 0.5, .5, 200)
+        self._fL_div_by_FB_range = Range(0, 8, 0.5, 2, 200)
         self._fL_div_by_FB_win = RangeWidget(self._fL_div_by_FB_range, self.set_fL_div_by_FB, 'fL/FB', "counter_slider", float)
         self.top_grid_layout.addWidget(self._fL_div_by_FB_win, 0,2,1,1)
-        self._A_noise_range = Range(0.01, 5, 0.01, 0.35, 200)
+        self._A_noise_range = Range(0.01, 5, 0.01, 1.11, 200)
         self._A_noise_win = RangeWidget(self._A_noise_range, self.set_A_noise, 'A Noise', "counter_slider", float)
         self.top_grid_layout.addWidget(self._A_noise_win, 0,3,1,1)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
@@ -245,12 +245,12 @@ class power_x001(gr.top_block, Qt.QWidget):
         self.interp_fir_filter_xxx_0 = filter.interp_fir_filter_fff(16, (ptfun.pampt(sps,ptype,pparms)))
         self.interp_fir_filter_xxx_0.declare_sample_delay(0)
         self.digital_glfsr_source_x_0 = digital.glfsr_source_f(22, True, 0, 1)
-        self.blocks_wavfile_sink_0 = blocks.wavfile_sink('pow_x003_0_5FB_20SNR.wav', 1, samp_rate, 16)
+        self.blocks_wavfile_sink_0 = blocks.wavfile_sink('pow_x003_2FB_05SNR.wav', 1, samp_rate, 16)
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_float*1, FB,True)
         self.blocks_nlog10_ff_0 = blocks.nlog10_ff(10, 1, 0)
         self.blocks_multiply_xx_0_0_0 = blocks.multiply_vff(1)
         self.blocks_multiply_xx_0_0 = blocks.multiply_vff(1)
-        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vff((0.6, ))
+        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vff((0.28, ))
         self.blocks_divide_xx_0 = blocks.divide_ff(1)
         self.blocks_add_xx_0 = blocks.add_vff(1)
         self.analog_noise_source_x_0 = analog.noise_source_f(analog.GR_GAUSSIAN, A_noise, 0)
