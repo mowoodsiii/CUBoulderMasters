@@ -5,7 +5,7 @@
 # Title: Power/PSD Example 1
 # Author: Maurice Woods
 # Description: Lab 05
-# Generated: Wed Mar  8 23:40:21 2017
+# Generated: Thu Mar  9 00:56:33 2017
 ##################################################
 
 if __name__ == '__main__':
@@ -69,17 +69,17 @@ class power_x001(gr.top_block, Qt.QWidget):
         self.samp_rate = samp_rate = 512000
         self.ptype = ptype = 'rect'
         self.pparms = pparms = []
-        self.fL_div_by_FB = fL_div_by_FB = 2
+        self.fL_div_by_FB = fL_div_by_FB = .5
         self.FB = FB = 32000
-        self.A_noise = A_noise = 0.19
+        self.A_noise = A_noise = 0.35
 
         ##################################################
         # Blocks
         ##################################################
-        self._fL_div_by_FB_range = Range(0, 8, 0.5, 2, 200)
+        self._fL_div_by_FB_range = Range(0, 8, 0.5, .5, 200)
         self._fL_div_by_FB_win = RangeWidget(self._fL_div_by_FB_range, self.set_fL_div_by_FB, 'fL/FB', "counter_slider", float)
         self.top_grid_layout.addWidget(self._fL_div_by_FB_win, 0,2,1,1)
-        self._A_noise_range = Range(0.01, 5, 0.01, 0.19, 200)
+        self._A_noise_range = Range(0.01, 5, 0.01, 0.35, 200)
         self._A_noise_win = RangeWidget(self._A_noise_range, self.set_A_noise, 'A Noise', "counter_slider", float)
         self.top_grid_layout.addWidget(self._A_noise_win, 0,3,1,1)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
@@ -178,7 +178,7 @@ class power_x001(gr.top_block, Qt.QWidget):
         factor = [1, 1, 1, 1, 1,
                   1, 1, 1, 1, 1]
         for i in xrange(1):
-            self.qtgui_number_sink_0.set_min(i, -25)
+            self.qtgui_number_sink_0.set_min(i, -15)
             self.qtgui_number_sink_0.set_max(i, 40)
             self.qtgui_number_sink_0.set_color(i, colors[i][0], colors[i][1])
             if len(labels[i]) == 0:
@@ -245,7 +245,7 @@ class power_x001(gr.top_block, Qt.QWidget):
         self.interp_fir_filter_xxx_0 = filter.interp_fir_filter_fff(16, (ptfun.pampt(sps,ptype,pparms)))
         self.interp_fir_filter_xxx_0.declare_sample_delay(0)
         self.digital_glfsr_source_x_0 = digital.glfsr_source_f(22, True, 0, 1)
-        self.blocks_wavfile_sink_0 = blocks.wavfile_sink('pow_x003_1.wav', 1, samp_rate, 16)
+        self.blocks_wavfile_sink_0 = blocks.wavfile_sink('pow_x003_0_5FB_20SNR.wav', 1, samp_rate, 16)
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_float*1, FB,True)
         self.blocks_nlog10_ff_0 = blocks.nlog10_ff(10, 1, 0)
         self.blocks_multiply_xx_0_0_0 = blocks.multiply_vff(1)

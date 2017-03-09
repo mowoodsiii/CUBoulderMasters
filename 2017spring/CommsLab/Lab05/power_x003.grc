@@ -89,7 +89,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>0.19</value>
+      <value>0.35</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -179,7 +179,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>2</value>
+      <value>.5</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -519,7 +519,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>True</value>
+      <value>0</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -778,11 +778,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>True</value>
+      <value>0</value>
     </param>
     <param>
       <key>file</key>
-      <value>pow_x003_1.wav</value>
+      <value>pow_x003_0_5FB_20SNR.wav</value>
     </param>
     <param>
       <key>_coordinate</key>

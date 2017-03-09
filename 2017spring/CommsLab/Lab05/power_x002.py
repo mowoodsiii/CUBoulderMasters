@@ -5,7 +5,7 @@
 # Title: Power/PSD Example 2
 # Author: Maurice Woods
 # Description: Lab 05
-# Generated: Wed Mar  8 23:18:06 2017
+# Generated: Wed Mar  8 01:23:54 2017
 ##################################################
 
 if __name__ == '__main__':
