@@ -97,10 +97,10 @@ def showeye(sig_rt, FB, NTd=50, dispparms=[], plotsize='large'):
         FB:  Baud rate of DT sequence a_n, TB = 1/FB
         NTd: Number of traces displayed
         dispparms = [delay, width, ylim1, ylim2]
-        delay:  trigger delay (in TB units, e.g., 0.5)
-        width:  display width (in TB units, e.g., 3)
-        ylim1:  lower display limit, vertical axis
-        ylim2:  upper display limit, vertical axis
+            delay:  trigger delay (in TB units, e.g., 0.5)
+            width:  display width (in TB units, e.g., 3)
+            ylim1:  lower display limit, vertical axis
+            ylim2:  upper display limit, vertical axis
     """
     if (type(FB)==int) or (type(FB)==float):
         FB=[FB]
@@ -201,10 +201,10 @@ def showpsd1(sig_xt, ff_lim, N, subject=''):
         sig_xt.signal(): sampled CT signal x(t)
         sig_xt.get_Fs(): sampling rate of x(t)
         ff_lim = [f1,f2,llim]
-        f1: lower frequency limit for display
-        f2: upper frequency limit for display
-        llim = 0: display S_x(f) linear and absolute
-        llim < 0: display 10*log_{10}(S_x(f))/max(S_x(f)) in dB with lower display limit llim dB
+            f1: lower frequency limit for display
+            f2: upper frequency limit for display
+            llim = 0: display S_x(f) linear and absolute
+            llim < 0: display 10*log_{10}(S_x(f))/max(S_x(f)) in dB with lower display limit llim dB
         N: blocklength
     """
 
@@ -242,17 +242,19 @@ def showpsd1(sig_xt, ff_lim, N, subject=''):
 
     # ***** Determine maximum, trim to ff_lim *****
     maxSxf = max(Sxf) # Maximum of S_x(f)
-    ixf = where(logical_and(ff>=f1, ff<f2))[0]
-    ff = ff[ixf] # Trim to ff_lim specs
-    Sxf = Sxf[ixf]
+    if ((f1!=inf) and (f1!=-inf) and (f2!=inf) and (f1!=-inf)):
+        ixf = where(logical_and(ff>=f1, ff<f2))[0]
+        ff = ff[ixf] # Trim to ff_lim specs
+        Sxf = Sxf[ixf]
 
     # ***** Determine the power over the ff_lim interval *****
     P_ff_lim = sum(Sxf)*df
 
     # ***** Convert to normalized dB based on llim
     if(llim<0):
-        Sxf = 20*log10(Sxf)/float(maxSxf)
+        Sxf = 10*log10(Sxf/float(maxSxf))
         strgy = "$S_x(f)/|S_x(f)| [dB]$"
+        Sxf[Sxf<llim]=llim
     else:
         Sxf = abs(Sxf)
         strgy = "$S_x(f)$"
@@ -265,6 +267,7 @@ def showpsd1(sig_xt, ff_lim, N, subject=''):
     strgt = strgt + ',    $\\Delta_f=${:.3g} Hz'.format(df)
     strgt = strgt + ',    $NN=${:d},    $N=${:d}'.format(NN, N)
     strgt = strgt + '\n' + '$P(-\infty,\infty)$={:.3g}W'.format(P_total)
-    strgt = strgt + ',          $P({:d}Hz,{:d}Hz)$ = {:.3g}W = {:.3g}% of $P(-\infty,\infty)$'.format(int(f1),int(f2),P_ff_lim,100*P_ff_lim/float(P_total))
+
+    strgt = strgt + ',          $P({:.1g}Hz,{:.1g}Hz)$ = {:.3g}W = {:.3g}% of $P(-\infty,\infty)$'.format(f1,f2,P_ff_lim,100*P_ff_lim/float(P_total))
     quick.quickplot(ff,Sxf,'-b',[],[],'',strgt,'f [Hz]','$S_x(f)$')
     show()

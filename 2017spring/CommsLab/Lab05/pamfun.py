@@ -218,3 +218,17 @@ def pam11(sig_an, Fs, ptype, pparms=[], plotparms=[]):
         quickplot(ttp,st,'-b',ttan,an,'or','Interpolated Data using a '+longptype+' pulse','Time','p(t)',plotparms[1:])
 
     return ecen.sigWave(st, Fs, t0)  # Return waveform from sigWave class
+
+def randompam(t=1,ptype='rect',pparms=[20,0],L=2,FB=100,Fs=44100):
+    N = t*FB # data points
+    dn = around(rand(N)) # random unipolar binary signal
+    an = (dn*L)-float(L/2) #polar binary
+    sig_an = ecen.sigSequ(an,FB)
+    intrp_an = pam11(sig_an, Fs, ptype,pparms,['noplot'])
+    return intrp_an
+
+def whitenoise(t=1,nfL=10000,Fs=44100):
+    nn = randn(round(t*2*nfL)) # Gaussian noise, rate 2*nfL
+    sig_nn = ecen.sigSequ(nn, 2*nfL, 0)
+    sig_nt = pam11(sig_nn,Fs,'rcf',[20, 0.2],['noplot']) #Bandlimited noise n(t), rate Fs
+    return sig_nt

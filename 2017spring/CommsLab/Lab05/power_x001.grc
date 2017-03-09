@@ -82,6 +82,60 @@
     </param>
   </block>
   <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(448, 12)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>FB</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>32000</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(360, 12)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>Fs</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>512000</value>
+    </param>
+  </block>
+  <block>
     <key>variable_qtgui_range</key>
     <param>
       <key>comment</key>
@@ -156,7 +210,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(536, 12)</value>
+      <value>(608, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -183,7 +237,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(456, 12)</value>
+      <value>(528, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -210,33 +264,6 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(360, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>samp_rate</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>512000</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
       <value>(288, 12)</value>
     </param>
     <param>
@@ -249,7 +276,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>26</value>
+      <value>Fs/FB</value>
     </param>
   </block>
   <block>
@@ -323,7 +350,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(192, 188)</value>
+      <value>(184, 188)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -347,7 +374,7 @@
     </param>
     <param>
       <key>samples_per_second</key>
-      <value>samp_rate</value>
+      <value>FB</value>
     </param>
     <param>
       <key>type</key>
@@ -445,7 +472,7 @@
     </param>
     <param>
       <key>import</key>
-      <value>import ptfun as pt</value>
+      <value>import ptfun</value>
     </param>
   </block>
   <block>
@@ -496,7 +523,7 @@
     </param>
     <param>
       <key>taps</key>
-      <value></value>
+      <value>ptfun.pampt(sps,ptype)</value>
     </param>
     <param>
       <key>type</key>
@@ -523,7 +550,7 @@
     </param>
     <param>
       <key>cutoff_freq</key>
-      <value>64000</value>
+      <value>fL_div_by_FB*FB</value>
     </param>
     <param>
       <key>decim</key>
@@ -567,7 +594,7 @@
     </param>
     <param>
       <key>samp_rate</key>
-      <value>samp_rate</value>
+      <value>Fs</value>
     </param>
     <param>
       <key>width</key>
@@ -598,11 +625,11 @@
     </param>
     <param>
       <key>cutoff_freq</key>
-      <value>64000</value>
+      <value>10</value>
     </param>
     <param>
       <key>decim</key>
-      <value>1</value>
+      <value>64</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -642,11 +669,11 @@
     </param>
     <param>
       <key>samp_rate</key>
-      <value>samp_rate</value>
+      <value>Fs</value>
     </param>
     <param>
       <key>width</key>
-      <value>3200</value>
+      <value>10</value>
     </param>
     <param>
       <key>win</key>
@@ -669,7 +696,7 @@
     </param>
     <param>
       <key>bw</key>
-      <value>samp_rate</value>
+      <value>Fs</value>
     </param>
     <param>
       <key>alias</key>
@@ -1495,7 +1522,7 @@
     </param>
     <param>
       <key>srate</key>
-      <value>samp_rate</value>
+      <value>Fs</value>
     </param>
     <param>
       <key>tr_chan</key>
