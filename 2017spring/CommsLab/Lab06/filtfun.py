@@ -4,6 +4,7 @@
 from pylab import *
 from scipy.signal import butter, lfilter
 import ecen4652 as ecen
+import quick
 
 def trapfilt0(sig_xt, fL, k, alfa):
     """
@@ -25,7 +26,14 @@ def trapfilt0(sig_xt, fL, k, alfa):
     ixk = round(Fs*k/float(2*fL)) # Tail cutoff index
     tth = arange(-ixk,ixk+1)/float(Fs) # Time axis for h(t)
     n = len(tth)-1 # Filter order
-    ht = (sin(2*pi*fL*tth)*sin(2*pi*alfa*fL*tth))/(pi*tth*2*pi*alfa*fL*tth)
+    ht_num = (sin(2*pi*fL*tth)*sin(2*pi*alfa*fL*tth))
+    ht_den = (pi*tth*2*pi*alfa*fL*tth)
+    ht = ht_num/ht_den
+    nans = where(isnan(ht))
+    for i in nans:
+        ht[i]=ht[i-1]
+    titlestr = 'Trapezoidal LPF, $h_L(t)$ Truncated to $|t|<k/(2f_L)$, $f_L$ = '+str(fL)+' Hz, k = '+str(k)+', alpha = '+str(alfa)
+    quick.quickplot(tth,ht,'-b',[],[],'',titlestr,'Time (s)','h_L(t)')
     yt = lfilter(ht, 1, hstack((xt, zeros(ixk))))/float(Fs) # Compute filter output y(t)
     yt = yt[ixk:] # Filter delay compensation
     return ecen.sigWave(yt, Fs, sig_xt.get_t0()), n # Return y(t) and filter order
