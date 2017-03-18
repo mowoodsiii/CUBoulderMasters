@@ -56,7 +56,7 @@ def showft(sig_xt, ff_lim, description=""):
                 argXf[i] = 0
     # ***** Convert absXt to dB and floor argXf for points where absXf<llim(dB) *****
     if llim<0:
-        mag=10**(llim/20)
+        mag=10**(abs/20)
         absXfmax=amax(absXf)
         for i in range(0,len(absXf)):
             if absXf[i]>mag:
@@ -133,7 +133,6 @@ def showeye(sig_rt, FB, NTd=50, dispparms=[], plotsize='large'):
         title = 'Eye Diagram for '+ sig_rt.signame +' (FB='+str(fb)+'bits/s)'
         quick.quickplot(fb*tteye,TM.T,'-b',[],[],'',title,'t/TB','Data Levels',[],[plotx,ploty])
 
-
 def showpsd0(sig_xt, ff_lim, N):
     """
     Plot (DFT/FFT approximation to) power spectral density (PSD) of x(t).
@@ -155,16 +154,13 @@ def showpsd0(sig_xt, ff_lim, N):
     Fs = sig_xt.get_Fs() # Sampling rate of x(t)
     N = int(min(N, len(xt))) # N <= length(xt) needed
     NN = int(floor(len(xt)/float(N))) # Number of blocks of length N
-
     f1 = ff_lim[0]
     f2 = ff_lim[1]
     if(f1 > f2):
         print("ERROR: f1 > f2")
         return
-
     xt = xt[0:N*NN] # Truncate x(t) to NN blocks
     xNN = reshape(xt,(NN,N)) # NN row vectors of length N
-
     # ***** Compute DFTs/FFTs, average over NN blocks *****
     Sxf = np.power(abs(fft(xNN)),2.0) # NN FFTs, mag squared
     if NN > 1:
@@ -178,13 +174,11 @@ def showpsd0(sig_xt, ff_lim, N):
         ff = hstack((ff[ixn]-Fs,ff[ixp])) # New freq axis
         Sxf = hstack((Sxf[ixn],Sxf[ixp])) # Corresponding S_x(f)
     df = Fs/float(N) # Delta_f, freq sample spacing
-
     # ***** Determine maximum, trim to ff_lim *****
     maxSxf = max(Sxf) # Maximum of S_x(f)
     ixf = where(logical_and(ff>=f1, ff<f2))[0]
     ff = ff[ixf] # Trim to ff_lim specs
     Sxf = Sxf[ixf]
-
     # ***** Plot PSD *****
     strgt = 'PSD Approximation, $F_s=${:d} Hz'.format(Fs)
     strgt = strgt + ', $\\Delta_f=${:.3g} Hz'.format(df)

@@ -287,8 +287,21 @@ def pamrcvr10(tt, rt, FBparms, ptype, pparms=[]):
     if (ptype=='rect'): # Rectangular p(t)
         ix = where(logical_and(ttp>=kL*TB, ttp<kR*TB))[0]
         pt[ix] = ones(len(ix))
+    elif (ptype=='tri'):
+        pt=1
+    elif (ptype=='sinc'):
+        pt=1
+    elif (ptype=='man'):
+        pt=1
+    elif (ptype=='rcf'):
+        pt=1
+    elif (ptype=='rrcf'):
+        pt=1
     else:
         print("ptype '%s' is not recognized" % ptype)
+    print('pt: ',pt)
+    print('pt len: ',len(pt))
+
     hRt = pt[::-1] # h_R(t) = p(-t)
     hRt = Fs/sum(np.power(pt,2.0))*hRt # h_R(t) normalized
     # ***** Filter r(t) with matched filter h_R(t)
