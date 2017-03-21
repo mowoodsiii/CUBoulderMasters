@@ -56,12 +56,10 @@ def showft(sig_xt, ff_lim, description=""):
                 argXf[i] = 0
     # ***** Convert absXt to dB and floor argXf for points where absXf<llim(dB) *****
     if llim<0:
-        mag=10**(abs/20)
         absXfmax=amax(absXf)
         for i in range(0,len(absXf)):
-            if absXf[i]>mag:
-                absXf[i] = 20*math.log10(absXf[i]/absXfmax)
-            else:
+            absXf[i] = 20*math.log10(absXf[i]/absXfmax)
+            if absXf[i]<llim:
                 absXf[i]=llim
                 argXf[i]=0
     # ***** Plot magnitude/phase *****
