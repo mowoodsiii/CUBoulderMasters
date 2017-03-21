@@ -272,23 +272,22 @@ def pam12(sig_an, Fs, ptype, pparms=[], plotparms=[]):
     FB = sig_an.get_FB()       # Baud rate
     TB = 1/float(FB)
 
-    Fs=Fs
-    M=int(Fs/FB)               # Interpolation number
+    M = int(Fs/FB)               # Interpolation number
     Sb = int(Fs/float(FB))     # Samples per bit
 
     ptype = ptype.lower()      # Convert ptype to lowercase
 
-    #if(ptype=='tri'):          # type-specific parameters
-        #Fs=FB
     if(ptype=='sinc'):
-        k=pparms[0]
-        beta=pparms[1]
+        k = pparms[0]
+        beta = pparms[1]
     elif (ptype=='rcf' or ptype=='rrcf'):
-        k=pparms[0]
-        alpha=pparms[1]
+        k = pparms[0]
+        alpha = pparms[1]
         if(alpha>1 or alpha<0):
             print('ERROR: pparm[1]=', str(alpha) ,' violates 0<=alpha<=1')
             return
+    else:
+        k = 0.5
 
 # ***** Set up time axis *****
     ixL = ceil(-Fs*(n0+0.5)/float(FB))   # Left index for time axis
@@ -306,19 +305,13 @@ def pam12(sig_an, Fs, ptype, pparms=[], plotparms=[]):
     ast = ast.flatten('F')
 
     # Set left/right limits for p(t)
-    if (ptype=='rect' or ptype=='tri' or ptype=='man'):
-        kL=-0.5; kR=-kL
-    elif (ptype=='sinc' or ptype=='rcf' or ptype=='rrcf'):
-        kL=-k; kR=-kL
-    else:
-        kL = -1.0; kR = -kL    # Default left/right limits
+    kL=-k; kR=-kL
     ixpL = ceil(Fs*kL/float(FB))   # Left index for p(t) time axis
     ixpR = ceil(Fs*kR/float(FB))   # Right index for p(t) time axis
     ttp = arange(ixpL,ixpR)/float(Fs)  # Time axis for p(t)
 
     ix = where(logical_and(ttp>=kL/float(FB), ttp<kR/float(FB)))[0]
     pt = []
-
     if (ptype=='rect'):
         pt = zeros(len(ttp))       # Initialize pulse p(t)
         pt[ix] = ones(len(ix))
@@ -360,6 +353,8 @@ def pam12(sig_an, Fs, ptype, pparms=[], plotparms=[]):
         return
 
     st = convolve(ast,pt,'same')  # s(t) = a_s(t)*p(t)
+
+    # ***** Plot the pulse and hte interpolated sequence *****
 
     if(ptype=='rect'):
         longptype='Rectangular'
