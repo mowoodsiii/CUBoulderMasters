@@ -28,10 +28,11 @@ def trapfilt0(sig_xt, fL, k, alfa):
     n = len(tth)-1 # Filter order
     ht_num = (sin(2*pi*fL*tth)*sin(2*pi*alfa*fL*tth))
     ht_den = (pi*tth*2*pi*alfa*fL*tth)
-    ht = ht_num/ht_den
-    nans = where(isnan(ht))
+    nans = where(ht_den==0)
     for i in nans:
-        ht[i]=ht[i-1]
+        ht_den[i]=1 # ht[i-1]
+        ht_num[i]=2*fL # ht[i-1]
+    ht = ht_num/ht_den
     titlestr = 'Trapezoidal LPF, $h_L(t)$ Truncated to $|t|<k/(2f_L)$, $f_L$ = '+str(fL)+' Hz, k = '+str(k)+', alpha = '+str(alfa)
     quick.quickplot(tth,ht,'-b',[],[],'',titlestr,'Time (s)','h_L(t)')
     yt = lfilter(ht, 1, hstack((xt, zeros(ixk))))/float(Fs) # Compute filter output y(t)

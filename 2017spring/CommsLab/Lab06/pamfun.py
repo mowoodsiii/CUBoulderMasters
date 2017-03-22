@@ -4,6 +4,7 @@ from pylab import *
 import ecen4652 as ecen
 from quick import *
 from math import *
+import ptfun
 
 def pam12(sig_an, Fs, ptype, pparms=[], plotparms=[]):
     """
@@ -179,7 +180,7 @@ def whitenoise(t=1,nfL=10000,Fs=44100):
     sig_nt = pam11(sig_nn,Fs,'rcf',[20, 0.2],['noplot']) #Bandlimited noise n(t), rate Fs
     return sig_nt
 
-def pamrcvr10(tt, rt, FBparms, ptype, pparms=[]):
+def pamrcvr10(sig_rt, FBparms, ptype, pparms=[]):
     """
     Pulse amplitude modulation receiver with matched filter:
     r(t) -> b(t) -> bn.
@@ -204,6 +205,9 @@ def pamrcvr10(tt, rt, FBparms, ptype, pparms=[]):
         ixn: indexes where b(t) is sampled to obtain b_n
     """
     ptype = ptype.lower() # Convert ptype to lowercase
+
+    tt = sig_rt.timeAxis()
+    rt = sig_rt.sig
 
     FB = FBparms[0]
     t0 = FBparms[1]

@@ -38,7 +38,7 @@ def bin2asc(dn, bits, flg=1):
    for i in range(N):
        value=0
        for j in range(abs(bits)):
-           value = value + (bitString[i][j]<<j)
+           value = value + (int(bitString[i][j])<<j)
        ASCIIString.append(value)
    textString=""
    for i in range(N):
