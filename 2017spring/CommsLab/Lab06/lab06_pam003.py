@@ -5,7 +5,7 @@
 # Title: Lab 6, PAM Example 3
 # Author: Maurice Woods
 # Description: ECEN 4652 :: Comms Lab
-# Generated: Wed Mar 22 00:44:06 2017
+# Generated: Wed Mar 22 17:16:03 2017
 ##################################################
 
 if __name__ == '__main__':
@@ -65,11 +65,11 @@ class lab06_pam003(gr.top_block, Qt.QWidget):
         # Variables
         ##################################################
         self.fL = fL = 1000
-        self.Fs = Fs = 256000
-        self.phiL = phiL = fL/Fs
+        self.Fs = Fs = 32000
+        self.phiL = phiL = fL/float(Fs)
         self.f0 = f0 = 1000
         self.alfa = alfa = 0.5
-        self.N = N = 10
+        self.N = N = 200
         self.A = A = 1
 
         ##################################################
@@ -77,16 +77,13 @@ class lab06_pam003(gr.top_block, Qt.QWidget):
         ##################################################
         self._f0_range = Range(0, 3000, 10, 1000, 200)
         self._f0_win = RangeWidget(self._f0_range, self.set_f0, 'Waveform Frequency', "counter_slider", int)
-        self.top_layout.addWidget(self._f0_win)
+        self.top_grid_layout.addWidget(self._f0_win, 1,0,1,1)
         self._alfa_range = Range(0, 10, 0.1, 0.5, 200)
         self._alfa_win = RangeWidget(self._alfa_range, self.set_alfa, 'Frequency Rolloff', "counter_slider", float)
-        self.top_layout.addWidget(self._alfa_win)
-        self._N_range = Range(1, 1000, 10, 10, 200)
+        self.top_grid_layout.addWidget(self._alfa_win, 0,1,1,1)
+        self._N_range = Range(1, 1000, 10, 200, 200)
         self._N_win = RangeWidget(self._N_range, self.set_N, 'Filter Order (N)', "counter_slider", int)
-        self.top_layout.addWidget(self._N_win)
-        self._A_range = Range(0, 5, 1, 1, 200)
-        self._A_win = RangeWidget(self._A_range, self.set_A, 'Waveform Amplitude', "counter_slider", int)
-        self.top_layout.addWidget(self._A_win)
+        self.top_grid_layout.addWidget(self._N_win, 1,1,1,1)
         self.qtgui_time_sink_x_0_0_0 = qtgui.time_sink_f(
         	1024, #size
         	Fs, #samp_rate
@@ -100,7 +97,7 @@ class lab06_pam003(gr.top_block, Qt.QWidget):
 
         self.qtgui_time_sink_x_0_0_0.enable_tags(-1, True)
         self.qtgui_time_sink_x_0_0_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
-        self.qtgui_time_sink_x_0_0_0.enable_autoscale(True)
+        self.qtgui_time_sink_x_0_0_0.enable_autoscale(False)
         self.qtgui_time_sink_x_0_0_0.enable_grid(True)
         self.qtgui_time_sink_x_0_0_0.enable_axis_labels(True)
         self.qtgui_time_sink_x_0_0_0.enable_control_panel(False)
@@ -108,11 +105,11 @@ class lab06_pam003(gr.top_block, Qt.QWidget):
         if not True:
           self.qtgui_time_sink_x_0_0_0.disable_legend()
 
-        labels = ['', '', '', '', '',
+        labels = ['Filtered Output', '', '', '', '',
                   '', '', '', '', '']
         widths = [1, 1, 1, 1, 1,
                   1, 1, 1, 1, 1]
-        colors = ["blue", "red", "green", "black", "cyan",
+        colors = ["red", "red", "green", "black", "cyan",
                   "magenta", "yellow", "dark red", "dark green", "blue"]
         styles = [1, 1, 1, 1, 1,
                   1, 1, 1, 1, 1]
@@ -133,54 +130,7 @@ class lab06_pam003(gr.top_block, Qt.QWidget):
             self.qtgui_time_sink_x_0_0_0.set_line_alpha(i, alphas[i])
 
         self._qtgui_time_sink_x_0_0_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0_0_0.pyqwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_time_sink_x_0_0_0_win)
-        self.qtgui_time_sink_x_0_0 = qtgui.time_sink_f(
-        	1024, #size
-        	Fs, #samp_rate
-        	"Decimated Output", #name
-        	1 #number of inputs
-        )
-        self.qtgui_time_sink_x_0_0.set_update_time(0.10)
-        self.qtgui_time_sink_x_0_0.set_y_axis(-1, 1)
-
-        self.qtgui_time_sink_x_0_0.set_y_label('Amplitude', "")
-
-        self.qtgui_time_sink_x_0_0.enable_tags(-1, True)
-        self.qtgui_time_sink_x_0_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
-        self.qtgui_time_sink_x_0_0.enable_autoscale(True)
-        self.qtgui_time_sink_x_0_0.enable_grid(True)
-        self.qtgui_time_sink_x_0_0.enable_axis_labels(True)
-        self.qtgui_time_sink_x_0_0.enable_control_panel(False)
-
-        if not True:
-          self.qtgui_time_sink_x_0_0.disable_legend()
-
-        labels = ['', '', '', '', '',
-                  '', '', '', '', '']
-        widths = [1, 1, 1, 1, 1,
-                  1, 1, 1, 1, 1]
-        colors = ["blue", "red", "green", "black", "cyan",
-                  "magenta", "yellow", "dark red", "dark green", "blue"]
-        styles = [1, 1, 1, 1, 1,
-                  1, 1, 1, 1, 1]
-        markers = [-1, -1, -1, -1, -1,
-                   -1, -1, -1, -1, -1]
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-                  1.0, 1.0, 1.0, 1.0, 1.0]
-
-        for i in xrange(1):
-            if len(labels[i]) == 0:
-                self.qtgui_time_sink_x_0_0.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_time_sink_x_0_0.set_line_label(i, labels[i])
-            self.qtgui_time_sink_x_0_0.set_line_width(i, widths[i])
-            self.qtgui_time_sink_x_0_0.set_line_color(i, colors[i])
-            self.qtgui_time_sink_x_0_0.set_line_style(i, styles[i])
-            self.qtgui_time_sink_x_0_0.set_line_marker(i, markers[i])
-            self.qtgui_time_sink_x_0_0.set_line_alpha(i, alphas[i])
-
-        self._qtgui_time_sink_x_0_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0_0.pyqwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_time_sink_x_0_0_win)
+        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_0_0_win, 3,0,1,2)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
         	1024, #size
         	Fs, #samp_rate
@@ -194,7 +144,7 @@ class lab06_pam003(gr.top_block, Qt.QWidget):
 
         self.qtgui_time_sink_x_0.enable_tags(-1, True)
         self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
-        self.qtgui_time_sink_x_0.enable_autoscale(True)
+        self.qtgui_time_sink_x_0.enable_autoscale(False)
         self.qtgui_time_sink_x_0.enable_grid(True)
         self.qtgui_time_sink_x_0.enable_axis_labels(True)
         self.qtgui_time_sink_x_0.enable_control_panel(False)
@@ -202,7 +152,7 @@ class lab06_pam003(gr.top_block, Qt.QWidget):
         if not True:
           self.qtgui_time_sink_x_0.disable_legend()
 
-        labels = ['', '', '', '', '',
+        labels = ['Input Waveform', '', '', '', '',
                   '', '', '', '', '']
         widths = [1, 1, 1, 1, 1,
                   1, 1, 1, 1, 1]
@@ -227,25 +177,21 @@ class lab06_pam003(gr.top_block, Qt.QWidget):
             self.qtgui_time_sink_x_0.set_line_alpha(i, alphas[i])
 
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_time_sink_x_0_win)
-        self.interp_fir_filter_xxx_0 = filter.interp_fir_filter_fff(N, (filtspecs.trapfilt_taps(N, phiL, alfa)))
+        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_win, 2,0,1,2)
+        self.interp_fir_filter_xxx_0 = filter.interp_fir_filter_fff(1, (filtspecs.trapfilt_taps(N, phiL, alfa)))
         self.interp_fir_filter_xxx_0.declare_sample_delay(0)
-        self.fir_filter_xxx_0 = filter.fir_filter_fff(N, (1, ))
-        self.fir_filter_xxx_0.declare_sample_delay(0)
         self._fL_range = Range(0, 3000, 10, 1000, 200)
         self._fL_win = RangeWidget(self._fL_range, self.set_fL, 'Cutoff Frequency', "counter_slider", int)
-        self.top_layout.addWidget(self._fL_win)
-        self.blocks_throttle_0 = blocks.throttle(gr.sizeof_float*1, 32000,True)
+        self.top_grid_layout.addWidget(self._fL_win, 0,0,1,1)
+        self.blocks_throttle_0 = blocks.throttle(gr.sizeof_float*1, Fs,True)
         self.analog_sig_source_x_0 = analog.sig_source_f(Fs, analog.GR_COS_WAVE, f0, A, 0)
 
         ##################################################
         # Connections
         ##################################################
         self.connect((self.analog_sig_source_x_0, 0), (self.blocks_throttle_0, 0))
-        self.connect((self.blocks_throttle_0, 0), (self.fir_filter_xxx_0, 0))
+        self.connect((self.blocks_throttle_0, 0), (self.interp_fir_filter_xxx_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.qtgui_time_sink_x_0, 0))
-        self.connect((self.fir_filter_xxx_0, 0), (self.interp_fir_filter_xxx_0, 0))
-        self.connect((self.fir_filter_xxx_0, 0), (self.qtgui_time_sink_x_0_0, 0))
         self.connect((self.interp_fir_filter_xxx_0, 0), (self.qtgui_time_sink_x_0_0_0, 0))
 
     def closeEvent(self, event):
@@ -258,17 +204,17 @@ class lab06_pam003(gr.top_block, Qt.QWidget):
 
     def set_fL(self, fL):
         self.fL = fL
-        self.set_phiL(self.fL/self.Fs)
+        self.set_phiL(self.fL/float(self.Fs))
 
     def get_Fs(self):
         return self.Fs
 
     def set_Fs(self, Fs):
         self.Fs = Fs
-        self.set_phiL(self.fL/self.Fs)
+        self.set_phiL(self.fL/float(self.Fs))
         self.qtgui_time_sink_x_0_0_0.set_samp_rate(self.Fs)
-        self.qtgui_time_sink_x_0_0.set_samp_rate(self.Fs)
         self.qtgui_time_sink_x_0.set_samp_rate(self.Fs)
+        self.blocks_throttle_0.set_sample_rate(self.Fs)
         self.analog_sig_source_x_0.set_sampling_freq(self.Fs)
 
     def get_phiL(self):

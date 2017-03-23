@@ -58,15 +58,12 @@ def pampt(sps, ptype, pparms=[], plot='', duty=1):
             if(t==0):
                 rcft_num = (1-alpha+(4*alpha/pi))
                 rcft_den = 1
-            elif(t==sps/float(4*alpha)) or (t==-1*sps/float(4*alpha)):
+            elif(abs(t)==1/float(4*alpha)):
                 rcft_num = alpha*((1+2/pi)*sin(pi/float(4*alpha))+(1-2/pi)*cos(pi/float(4*alpha)))
                 rcft_den = pow(2,0.5)
             else:
                 rcft_num = (sin(pi*t*(1-alpha))+(4*alpha*t)*cos(pi*t*(1+alpha)))
                 rcft_den = pi*t*(1-pow(4*alpha*t,2))
-            if rcft_den==0:
-                rcft_num = (1-alpha+(4*alpha/pi))
-                rcft_den = 1
             rcft = divide(rcft_num,float(rcft_den))
             pt = concatenate([pt,[rcft]])
     else:

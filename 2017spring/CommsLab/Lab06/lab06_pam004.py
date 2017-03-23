@@ -5,7 +5,7 @@
 # Title: Lab 6, PAM Example 4
 # Author: Maurice Woods
 # Description: ECEN 4652 :: Comms Lab
-# Generated: Tue Mar 21 23:11:29 2017
+# Generated: Wed Mar 22 18:51:33 2017
 ##################################################
 
 if __name__ == '__main__':
@@ -72,7 +72,7 @@ class lab06_pam004(gr.top_block, Qt.QWidget):
         self.sym_dly = sym_dly = 0
         self.sps = sps = Fs/FB
         self.samp_dly = samp_dly = 0
-        self.ptype = ptype = 'man'
+        self.ptype = ptype = 'rect'
         self.pparms = pparms = [5,0.5]
         self.nfilts = nfilts = 32
         self.An = An = 0
@@ -82,28 +82,37 @@ class lab06_pam004(gr.top_block, Qt.QWidget):
         ##################################################
         self._timing_loop_bw_range = Range(0, 0.2, 0.01, 0.0628, 200)
         self._timing_loop_bw_win = RangeWidget(self._timing_loop_bw_range, self.set_timing_loop_bw, 'Timing Loop BW', "counter_slider", float)
-        self.top_layout.addWidget(self._timing_loop_bw_win)
+        self.top_grid_layout.addWidget(self._timing_loop_bw_win, 1,1,1,1)
         self._sym_dly_range = Range(0, 16, 1, 0, 200)
         self._sym_dly_win = RangeWidget(self._sym_dly_range, self.set_sym_dly, 'Symbol Delay', "counter_slider", int)
-        self.top_layout.addWidget(self._sym_dly_win)
+        self.top_grid_layout.addWidget(self._sym_dly_win, 0,1,1,1)
         self._samp_dly_range = Range(0, 16, 1, 0, 200)
         self._samp_dly_win = RangeWidget(self._samp_dly_range, self.set_samp_dly, 'Sample Delay', "counter_slider", int)
-        self.top_layout.addWidget(self._samp_dly_win)
+        self.top_grid_layout.addWidget(self._samp_dly_win, 0,0,1,1)
         self._ptype_options = ('rect', 'man', 'rrcf', )
         self._ptype_labels = ('Rectangular', 'Manchester', 'Root Raised Cosine in Freq', )
-        self._ptype_tool_bar = Qt.QToolBar(self)
-        self._ptype_tool_bar.addWidget(Qt.QLabel(ptype+": "))
-        self._ptype_combo_box = Qt.QComboBox()
-        self._ptype_tool_bar.addWidget(self._ptype_combo_box)
-        for label in self._ptype_labels: self._ptype_combo_box.addItem(label)
-        self._ptype_callback = lambda i: Qt.QMetaObject.invokeMethod(self._ptype_combo_box, "setCurrentIndex", Qt.Q_ARG("int", self._ptype_options.index(i)))
+        self._ptype_group_box = Qt.QGroupBox('ptype')
+        self._ptype_box = Qt.QHBoxLayout()
+        class variable_chooser_button_group(Qt.QButtonGroup):
+            def __init__(self, parent=None):
+                Qt.QButtonGroup.__init__(self, parent)
+            @pyqtSlot(int)
+            def updateButtonChecked(self, button_id):
+                self.button(button_id).setChecked(True)
+        self._ptype_button_group = variable_chooser_button_group()
+        self._ptype_group_box.setLayout(self._ptype_box)
+        for i, label in enumerate(self._ptype_labels):
+        	radio_button = Qt.QRadioButton(label)
+        	self._ptype_box.addWidget(radio_button)
+        	self._ptype_button_group.addButton(radio_button, i)
+        self._ptype_callback = lambda i: Qt.QMetaObject.invokeMethod(self._ptype_button_group, "updateButtonChecked", Qt.Q_ARG("int", self._ptype_options.index(i)))
         self._ptype_callback(self.ptype)
-        self._ptype_combo_box.currentIndexChanged.connect(
+        self._ptype_button_group.buttonClicked[int].connect(
         	lambda i: self.set_ptype(self._ptype_options[i]))
-        self.top_layout.addWidget(self._ptype_tool_bar)
+        self.top_grid_layout.addWidget(self._ptype_group_box, 2,0,1,2)
         self._An_range = Range(0, 2, 0.1, 0, 200)
         self._An_win = RangeWidget(self._An_range, self.set_An, 'An', "counter_slider", float)
-        self.top_layout.addWidget(self._An_win)
+        self.top_grid_layout.addWidget(self._An_win, 1,0,1,1)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
         	1024, #size
         	Fs, #samp_rate
@@ -125,7 +134,7 @@ class lab06_pam004(gr.top_block, Qt.QWidget):
         if not True:
           self.qtgui_time_sink_x_0.disable_legend()
 
-        labels = ['', '', '', '', '',
+        labels = ['err', 'rate', 'phase', '', '',
                   '', '', '', '', '']
         widths = [1, 1, 1, 1, 1,
                   1, 1, 1, 1, 1]
@@ -150,7 +159,7 @@ class lab06_pam004(gr.top_block, Qt.QWidget):
             self.qtgui_time_sink_x_0.set_line_alpha(i, alphas[i])
 
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_time_sink_x_0_win)
+        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_win, 3,0,1,2)
         self.qtgui_sink_x_0 = qtgui.sink_f(
         	1024, #fftsize
         	firdes.WIN_BLACKMAN_hARRIS, #wintype
@@ -164,7 +173,7 @@ class lab06_pam004(gr.top_block, Qt.QWidget):
         )
         self.qtgui_sink_x_0.set_update_time(1.0/10)
         self._qtgui_sink_x_0_win = sip.wrapinstance(self.qtgui_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_sink_x_0_win)
+        self.top_grid_layout.addWidget(self._qtgui_sink_x_0_win, 4,0,1,2)
 
         self.qtgui_sink_x_0.enable_rf_freq(False)
 
@@ -172,7 +181,7 @@ class lab06_pam004(gr.top_block, Qt.QWidget):
 
         self.interp_fir_filter_xxx_0 = filter.interp_fir_filter_fff(sps, (pf.pampt(sps,ptype,pparms)))
         self.interp_fir_filter_xxx_0.declare_sample_delay(0)
-        self.digital_pfb_clock_sync_xxx_0 = digital.pfb_clock_sync_fff(sps, timing_loop_bw, (1/float(sps)*pf.pampt(sps*nfilts,ptype,pparms)), nfilts, nfilts/2, 0.7, 1)
+        self.digital_pfb_clock_sync_xxx_0 = digital.pfb_clock_sync_fff(sps, timing_loop_bw, (1/float(sps)*pf.pampt(sps*nfilts,ptype,pparms)), nfilts, nfilts/2.0, 0.7, 1)
         self.digital_binary_slicer_fb_1 = digital.binary_slicer_fb()
         self.blocks_vector_source_x_0 = blocks.vector_source_b(list(ord(i) for i in 'The quick brown fox...'), True, 1, [])
         self.blocks_unpacked_to_packed_xx_0 = blocks.unpacked_to_packed_bb(1, gr.GR_LSB_FIRST)
