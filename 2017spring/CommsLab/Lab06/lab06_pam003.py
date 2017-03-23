@@ -5,7 +5,7 @@
 # Title: Lab 6, PAM Example 3
 # Author: Maurice Woods
 # Description: ECEN 4652 :: Comms Lab
-# Generated: Wed Mar 22 17:16:03 2017
+# Generated: Wed Mar 22 22:14:00 2017
 ##################################################
 
 if __name__ == '__main__':
@@ -191,7 +191,6 @@ class lab06_pam003(gr.top_block, Qt.QWidget):
         ##################################################
         self.connect((self.analog_sig_source_x_0, 0), (self.blocks_throttle_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.interp_fir_filter_xxx_0, 0))
-        self.connect((self.blocks_throttle_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.interp_fir_filter_xxx_0, 0), (self.qtgui_time_sink_x_0_0_0, 0))
 
     def closeEvent(self, event):

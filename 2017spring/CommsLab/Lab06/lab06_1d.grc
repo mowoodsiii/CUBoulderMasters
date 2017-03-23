@@ -1357,12 +1357,6 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>blocks_throttle_0</source_block_id>
-    <sink_block_id>qtgui_time_sink_x_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
     <source_block_id>interp_fir_filter_xxx_0</source_block_id>
     <sink_block_id>qtgui_time_sink_x_0_0_0</sink_block_id>
     <source_key>0</source_key>
