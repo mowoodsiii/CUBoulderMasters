@@ -1,7 +1,7 @@
 def amxmtr(sig_mt, xtype, fcparms, fmparms=[], fBparms=[]):
 """
-    Amplitude Modulation Transmitter for suppressed (’sc’)
-    and transmitted (’tc’) carrier AM signals
+    Amplitude Modulation Transmitter for suppressed ('sc')
+    and transmitted ('tc') carrier AM signals
     >>>>> sig_xt = amxmtr(sig_mt, xtype, fcparms, fmparms, fBparms) <<<<<
     where
         sig_xt: waveform from class sigWave
@@ -10,9 +10,9 @@ def amxmtr(sig_mt, xtype, fcparms, fmparms=[], fBparms=[]):
         sig_mt: waveform from class sigWave
         sig_mt.signal(): modulating (wideband) message signal
         sig_mt.timeAxis(): time axis for m(t)
-        xtype: ’sc’ or ’tc’ (suppressed or transmitted carrier)
-        fcparms = [fc, thetac] for ’sc’
-        fcparms = [fc, thetac, alfa] for ’tc’
+        xtype: 'sc' or 'tc' (suppressed or transmitted carrier)
+        fcparms = [fc, thetac] for 'sc'
+        fcparms = [fc, thetac, alfa] for 'tc'
         fc: carrier frequency
         thetac: carrier phase in deg (0: cos, -90: sin)
         alfa: modulation index 0 <= alfa <= 1
@@ -29,9 +29,9 @@ def amxmtr(sig_mt, xtype, fcparms, fmparms=[], fBparms=[]):
 
 def amrcvr(sig_rt, rtype, fcparms, fmparms=[], fBparms=[], dcblock=False):
 """
-    Amplitude Modulation Receiver for coherent (’coh’) reception,
-    or absolute value (’abs’), or squaring (’sqr’) demodulation,
-    or I-Q envelope (’iqabs’) detection, or I-Q phase (’iqangle’)
+    Amplitude Modulation Receiver for coherent ('coh') reception,
+    or absolute value ('abs'), or squaring ('sqr') demodulation,
+    or I-Q envelope ('iqabs') detection, or I-Q phase ('iqangle')
     detection.
     >>>>> sig_mthat = amrcvr(sig_rt, rtype, fcparms, fmparms,
     fBparms, dcblock) <<<<<
@@ -43,11 +43,11 @@ def amrcvr(sig_rt, rtype, fcparms, fmparms=[], fBparms=[], dcblock=False):
         sig_rt.signal(): received AM signal
         sig_rt.timeAxis(): time axis for r(t)
         rtype: Receiver type from list
-            ’abs’ (absolute value envelope detector),
-            ’coh’ (coherent),
-            ’iqangle’ (I-Q rcvr, angle or phase),
-            ’iqabs’ (I-Q rcvr, absolute value or envelope),
-            ’sqr’ (squaring envelope detector)
+            'abs' (absolute value envelope detector),
+            'coh' (coherent),
+            'iqangle' (I-Q rcvr, angle or phase),
+            'iqabs' (I-Q rcvr, absolute value or envelope),
+            'sqr' (squaring envelope detector)
         fcparms = [fc, thetac]
         fc: carrier frequency
         thetac: carrier phase in deg (0: cos, -90: sin)
