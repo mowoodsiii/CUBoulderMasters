@@ -1,5 +1,10 @@
+from pylab import *
+import ecen4652 as ecen
+import quick
+import filtfun
+
 def amxmtr(sig_mt, xtype, fcparms, fmparms=[], fBparms=[]):
-"""
+    """
     Amplitude Modulation Transmitter for suppressed ('sc')
     and transmitted ('tc') carrier AM signals
     >>>>> sig_xt = amxmtr(sig_mt, xtype, fcparms, fmparms, fBparms) <<<<<
@@ -13,22 +18,53 @@ def amxmtr(sig_mt, xtype, fcparms, fmparms=[], fBparms=[]):
         xtype: 'sc' or 'tc' (suppressed or transmitted carrier)
         fcparms = [fc, thetac] for 'sc'
         fcparms = [fc, thetac, alfa] for 'tc'
-        fc: carrier frequency
-        thetac: carrier phase in deg (0: cos, -90: sin)
-        alfa: modulation index 0 <= alfa <= 1
-        fmparms = [fm, km, alfam] LPF at fm parameters no LPF at fm if fmparms = []
-        fm: highest message frequency
-        km: LPF h(t) truncation to |t| <= km/(2*fm)
-        alfam: LPF at fm frequency rolloff parameter, linear rolloff over range 2*alfam*fm
+            fc: carrier frequency
+            thetac: carrier phase in deg (0: cos, -90: sin)
+            alfa: modulation index 0 <= alfa <= 1
+        fmparms = [fm, km, alfam] LPF at fm parameters, no LPF at fm if fmparms = []
+            fm: highest message frequency
+            km: LPF h(t) truncation to |t| <= km/(2*fm)
+            alfam: LPF at fm frequency rolloff parameter, linear rolloff over range 2*alfam*fm
         fBparms = [fBW, fcB, kB, alfaB] BPF at fcB parameters no BPF if fBparms = []
-        fBW: -6 dB BW of BPF
-        fcB: center freq of BPF
+            fBW: -6 dB BW of BPF
+            fcB: center freq of BPF
         kB: BPF h(t) truncation to |t| <= kB/fBW
         alfaB: BPF frequency rolloff parameter, linear rolloff over range alfaB*fBW
-"""
+    """
+    Ac=1
+
+    if xtype=='sc':
+        [fc,thetac] = fcparms
+    elif xtype=='tc':
+        [fc,thetac,alfa] = fcparms
+    else:
+        print('xtype "',xtype,'" not supported!' )
+        return
+
+    if len(fmparms)==3: # Perform LPF
+        [fm,km,alfam] = fmparms
+        [sig_mt,order] = filtfun.trapfilt1( sig_mt, [fm], km, alfam)
+    elif len(fmparms)!=0:
+        print('Improper LPF fparms!')
+
+    # Generate AM signal
+    tt = sig_mt.timeAxis()
+    sig_xt = sig_mt.copy()
+    if xtype=='sc': # section 1.1
+        sig_xt.sig = Ac * sig_mt.signal() * cos(2*pi*fc*tt+thetac)
+    elif xtype=='tc': # section 1.5
+        sig_xt.sig = (Ac * cos(2*pi*fc*tt+thetac)) + (Ac * sig_mt.signal() * alfa * cos(2*pi*fc*tt+thetac))
+
+    if len(fBparms)==4: # Perform BPF
+        [fBW,fcB,kB,alfaB] = fBparms
+        [sig_xt,order] = filtfun.trapfilt1( sig_xt, [fBW,fcB], kB, alfaB)
+    elif len(fBparms)!=0:
+        print('Improper BPF fparms!')
+
+    return sig_xt
 
 def amrcvr(sig_rt, rtype, fcparms, fmparms=[], fBparms=[], dcblock=False):
-"""
+    """
     Amplitude Modulation Receiver for coherent ('coh') reception,
     or absolute value ('abs'), or squaring ('sqr') demodulation,
     or I-Q envelope ('iqabs') detection, or I-Q phase ('iqangle')
@@ -61,10 +97,10 @@ def amrcvr(sig_rt, rtype, fcparms, fmparms=[], fBparms=[], dcblock=False):
         kB: BPF h(t) truncation to |t| <= kB/fBW
         alfaB: BPF frequency rolloff parameter, linear rolloff over range alfaB*fBW
         dcblock: remove dc component from mthat if true
-"""
+    """
 
 def qamxmtr(sig_mt, fcparms, fmparms=[]):
-"""
+    """
     Quadrature Amplitude Modulation (QAM) Transmitter with
     complex-valued input/output signals
     >>>>> sig_xt = qamxmtr(sig_mt, fcparms, fmparms) <<<<<
@@ -82,11 +118,11 @@ def qamxmtr(sig_mt, fcparms, fmparms=[]):
         fm: highest message frequency (-6dB)
         km: h(t) is truncated to |t| <= km/(2*fm)
         alfam: frequency rolloff parameter, linear rolloff over range (1-alfam)*fm <= |f| <= (1+alfam)*fm
-"""
+    """
 
 
 def qamrcvr(sig_rt, fcparms, fmparms=[]):
-"""
+    """
     Quadrature Amplitude Modulation (QAM) Receiver with
     complex-valued input/output signals
     >>>>> sig_mthat = qamrcvr(sig_rt, fcparms, fmparms) <<<<<
@@ -105,4 +141,4 @@ def qamrcvr(sig_rt, fcparms, fmparms=[]):
         fm: highest message frequency (-6 dB)
         km: h(t) is truncated to |t| <= km/(2*fm)
         alfam: frequency rolloff parameter, linear rolloff over range (1-alfam)*fm <= |f| <= (1+alfam)*fm
-"""
+    """
