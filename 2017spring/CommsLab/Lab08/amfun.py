@@ -28,8 +28,8 @@ def amxmtr(sig_mt, xtype, fcparms, fmparms=[], fBparms=[]):
         fBparms = [fBW, fcB, kB, alfaB] BPF at fcB parameters no BPF if fBparms = []
             fBW: -6 dB BW of BPF
             fcB: center freq of BPF
-        kB: BPF h(t) truncation to |t| <= kB/fBW
-        alfaB: BPF frequency rolloff parameter, linear rolloff over range alfaB*fBW
+            kB: BPF h(t) truncation to |t| <= kB/fBW
+            alfaB: BPF frequency rolloff parameter, linear rolloff over range alfaB*fBW
     """
     Ac=1
 

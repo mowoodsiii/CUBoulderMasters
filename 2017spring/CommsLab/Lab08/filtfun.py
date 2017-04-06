@@ -92,7 +92,7 @@ def trapfilt1(sig_xt, fparms, k, alfa, disp=''):
         quick.quickplot(tth,ht,'-b',[],[],'',titlestr,'Time (s)','h_L(t)')
     yt = lfilter(ht, 1, hstack((xt, zeros(ixk))))/float(Fs) # Compute filter output y(t)
     yt = yt[ixk:] # Filter delay compensation
-    return ecen.sigWave(yt*Fs, Fs, sig_xt.get_t0()), n # Return y(t) and filter order
+    return ecen.sigWave(yt/2, Fs, sig_xt.get_t0()), n # Return y(t) and filter order
 
 def trapfilt_cc(sig_xt, fparms, k, alfa):
     """
