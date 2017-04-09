@@ -10,11 +10,11 @@ def amxmtr(sig_mt, xtype, fcparms, fmparms=[], fBparms=[]):
     >>>>> sig_xt = amxmtr(sig_mt, xtype, fcparms, fmparms, fBparms) <<<<<
     where
         sig_xt: waveform from class sigWave
-        sig_xt.signal(): transmitted AM signal
-        sig_xt.timeAxis(): time axis for x(t)
+            sig_xt.signal(): transmitted AM signal
+            sig_xt.timeAxis(): time axis for x(t)
         sig_mt: waveform from class sigWave
-        sig_mt.signal(): modulating (wideband) message signal
-        sig_mt.timeAxis(): time axis for m(t)
+            sig_mt.signal(): modulating (wideband) message signal
+            sig_mt.timeAxis(): time axis for m(t)
         xtype: 'sc' or 'tc' (suppressed or transmitted carrier)
         fcparms = [fc, thetac] for 'sc'
         fcparms = [fc, thetac, alfa] for 'tc'
@@ -85,31 +85,76 @@ def amrcvr(sig_rt, rtype, fcparms, fmparms=[], fBparms=[], dcblock=False):
     fBparms, dcblock) <<<<<
     where
         sig_mthat: waveform from class sigWave
-        sig_mthat.signal(): demodulated message signal
-        sig_mthat.timeAxis(): time axis mhat(t)
+            sig_mthat.signal(): demodulated message signal
+            sig_mthat.timeAxis(): time axis mhat(t)
         sig_rt: waveform from class sigWave
-        sig_rt.signal(): received AM signal
-        sig_rt.timeAxis(): time axis for r(t)
+            sig_rt.signal(): received AM signal
+            sig_rt.timeAxis(): time axis for r(t)
         rtype: Receiver type from list
-            'abs' (absolute value envelope detector),
-            'coh' (coherent),
+            'abs' (absolute value envelope detector; pg12 of Lab08),
+            'coh' (coherent; pg6 of Lab08),
             'iqangle' (I-Q rcvr, angle or phase),
             'iqabs' (I-Q rcvr, absolute value or envelope),
-            'sqr' (squaring envelope detector)
+            'sqr' (squaring envelope detector; pg11 of Lab08)
         fcparms = [fc, thetac]
-        fc: carrier frequency
-        thetac: carrier phase in deg (0: cos, -90: sin)
-        fmparms = [fm, km, alfam] LPF at fm parameters no LPF at fm if fmparms = []
-        fm: highest message frequency
-        km: LPF h(t) truncation to |t| <= km/(2*fm)
-        alfam: LPF at fm frequency rolloff parameter, linear rolloff over range 2*alfam*fm
-        fBparms = [fBW, fcB, kB, alfaB] BPF at fcB parameters no BPF if fBparms = []
-        fBW: -6 dB BW of BPF
-        fcB: center freq of BPF
-        kB: BPF h(t) truncation to |t| <= kB/fBW
-        alfaB: BPF frequency rolloff parameter, linear rolloff over range alfaB*fBW
+            fc: carrier frequency
+            thetac: carrier phase in deg (0: cos, -90: sin)
+        fmparms = [fm, km, alfam] LPF at fm parameters; no LPF at fm if fmparms = []
+            fm: highest message frequency
+            km: LPF h(t) truncation to |t| <= km/(2*fm)
+            alfam: LPF at fm frequency rolloff parameter, linear rolloff over range 2*alfam*fm
+        fBparms = [fBW, fcB, kB, alfaB] BPF at fcB parameters; no BPF if fBparms = []
+            fBW: -6 dB BW of BPF
+            fcB: center freq of BPF
+            kB: BPF h(t) truncation to |t| <= kB/fBW
+            alfaB: BPF frequency rolloff parameter, linear rolloff over range alfaB*fBW
         dcblock: remove dc component from mthat if true
     """
+    rtype = rtype.lower()
+    if rtype=='abs':
+        print('Abs')
+    elif rtype=='coh':
+        print('Coh')
+    elif rtype=='iqangle':
+        print('iqangle')
+    elif rtype=='iqabs':
+        print('iqabs')
+    elif rtype=='sqr':
+        print('Sqr')
+    else:
+        print('Unsupported rtype: ', rtype)
+        return
+
+    tt = sig_rt.timeAxis()
+
+    if len(fcparms)==3:
+        [fc,thetac,Ac] = fcparms
+    elif len(fcparms)==2:
+        [fc,thetac] = fcparms
+        Ac=1
+    else:
+        print('Inapprorpriate number of fcparms')
+        return
+
+    sig_mthat = sig_rt.copy()
+    sig_mthat.sig = 2 * Ac * sig_rt.signal() * cos(2*pi*fc*tt+thetac)
+
+    if len(fmparms)==3:
+        [fm,km,alfam] = fmparms
+        [sig_mthat,order] = filtfun.trapfilt1( sig_mthat, [fm], km, alfam)
+    elif len(fmparms)!=0:
+        print('Inappropriate number of arguments for fmparms')
+        return
+
+    if len(fBparms)==4:
+        [fBW,fcB,kB,alfaB] = fBparms
+        [sig_mthat,order] = filtfun.trapfilt1( sig_mthat, [fBW,fcB], kB, alfaB)
+    elif len(fBparms)!=0:
+        print('Inappropriate number of arguments for fBparms')
+        return
+
+    return(sig_mthat)
+
 
 def qamxmtr(sig_mt, fcparms, fmparms=[]):
     """
@@ -118,18 +163,19 @@ def qamxmtr(sig_mt, fcparms, fmparms=[]):
     >>>>> sig_xt = qamxmtr(sig_mt, fcparms, fmparms) <<<<<
     where
         sig_xt: waveform from class sigWave
-        sig_xt.signal(): complex-valued QAM signal
-        sig_xt.timeAxis(): time axis for x(t)
-        sig_mt.signal(): complex-valued (wideband) message signal
-        sig_mt.timeAxis(): time axis for m(t)
+            sig_xt.signal(): complex-valued QAM signal
+            sig_xt.timeAxis(): time axis for x(t)
+        sig_mt: waveform from class sigWave
+            sig_mt.signal(): complex-valued (wideband) message signal
+            sig_mt.timeAxis(): time axis for m(t)
         fcparms = [fc, thetaci, thetacq]
-        fc: carrier frequency
-        thetaci: in-phase (cos) carrier phase in deg
-        thetacq: quadrature (sin) carrier phase in deg
+            fc: carrier frequency
+            thetaci: in-phase (cos) carrier phase in deg
+            thetacq: quadrature (sin) carrier phase in deg
         fmparms = [fm, km, alfam] for LPF at fm parameters no LPF/BPF at fm if fmparms = []
-        fm: highest message frequency (-6dB)
-        km: h(t) is truncated to |t| <= km/(2*fm)
-        alfam: frequency rolloff parameter, linear rolloff over range (1-alfam)*fm <= |f| <= (1+alfam)*fm
+            fm: highest message frequency (-6dB)
+            km: h(t) is truncated to |t| <= km/(2*fm)
+            alfam: frequency rolloff parameter, linear rolloff over range (1-alfam)*fm <= |f| <= (1+alfam)*fm
     """
 
 
@@ -140,17 +186,17 @@ def qamrcvr(sig_rt, fcparms, fmparms=[]):
     >>>>> sig_mthat = qamrcvr(sig_rt, fcparms, fmparms) <<<<<
     where
         sig_mthat: waveform from class sigWave
-        sig_mthat.signal(): complex-valued demodulated message signal
-        sig_mthat.timeAxis(): time axis for mhat(t)
+            sig_mthat.signal(): complex-valued demodulated message signal
+            sig_mthat.timeAxis(): time axis for mhat(t)
         sig_rt: waveform from class sigWave
-        sig_rt.signal(): received QAM signal (real- or complex-valued)
-        sig_rt.timeAxis(): time axis for r(t)
+            sig_rt.signal(): received QAM signal (real- or complex-valued)
+            sig_rt.timeAxis(): time axis for r(t)
         fcparms = [fc, thetaci, thetacq]
-        fc: carrier frequency
-        thetaci: in-phase (cos) carrier phase in deg
-        thetacq: quadrature (sin) carrier phase in deg
+            fc: carrier frequency
+            thetaci: in-phase (cos) carrier phase in deg
+            thetacq: quadrature (sin) carrier phase in deg
         fmparms = [fm, km, alfam] for LPF at fm parameters no LPF at fm if fmparms = []
-        fm: highest message frequency (-6 dB)
-        km: h(t) is truncated to |t| <= km/(2*fm)
-        alfam: frequency rolloff parameter, linear rolloff over range (1-alfam)*fm <= |f| <= (1+alfam)*fm
+            fm: highest message frequency (-6 dB)
+            km: h(t) is truncated to |t| <= km/(2*fm)
+            alfam: frequency rolloff parameter, linear rolloff over range (1-alfam)*fm <= |f| <= (1+alfam)*fm
     """
