@@ -31,12 +31,24 @@ def amxmtr(sig_mt, xtype, fcparms, fmparms=[], fBparms=[]):
             kB: BPF h(t) truncation to |t| <= kB/fBW
             alfaB: BPF frequency rolloff parameter, linear rolloff over range alfaB*fBW
     """
-    Ac=1
-
     if xtype=='sc':
-        [fc,thetac] = fcparms
+        if len(fcparms)==3:
+            [fc,thetac,Ac] = fcparms
+        elif len(fcparms)==2:
+            [fc,thetac] = fcparms
+            Ac=1
+        else:
+            print('Inapprorpriate fcparms for SC type')
+            return
     elif xtype=='tc':
-        [fc,thetac,alfa] = fcparms
+        if len(fcparms)==4:
+            [fc,thetac,alfa,Ac] = fcparms
+        elif len(fcparms)==3:
+            [fc,thetac,alfa] = fcparms
+            Ac=1;
+        else:
+            print('Inapprorpriate fcparms for TC type')
+            return
     else:
         print('xtype "',xtype,'" not supported!' )
         return
