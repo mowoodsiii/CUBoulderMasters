@@ -112,15 +112,15 @@ def amrcvr(sig_rt, rtype, fcparms, fmparms=[], fBparms=[], dcblock=False):
     """
     rtype = rtype.lower()
     if rtype=='abs':
-        print('Abs')
+        print('Absolute Value Envelope Detector')
     elif rtype=='coh':
-        print('Coh')
+        print('Coherent')
     elif rtype=='iqangle':
-        print('iqangle')
+        print('I-Q Angle')
     elif rtype=='iqabs':
-        print('iqabs')
+        print('I-Q Absolute Value')
     elif rtype=='sqr':
-        print('Sqr')
+        print('Squaring Envelope Detector')
     else:
         print('Unsupported rtype: ', rtype)
         return
@@ -135,8 +135,11 @@ def amrcvr(sig_rt, rtype, fcparms, fmparms=[], fBparms=[], dcblock=False):
     else:
         print('Inapprorpriate number of fcparms')
         return
+    if thetac>2*pi || thetac<-2*pi:
+        print("WARNING: The angle for thetac is larger than usual (",thetac,").\n         Be sure that thetac is given in radians)
 
     sig_mthat = sig_rt.copy()
+
     sig_mthat.sig = 2 * Ac * sig_rt.signal() * cos(2*pi*fc*tt+thetac)
 
     if len(fmparms)==3:
@@ -152,6 +155,17 @@ def amrcvr(sig_rt, rtype, fcparms, fmparms=[], fBparms=[], dcblock=False):
     elif len(fBparms)!=0:
         print('Inappropriate number of arguments for fBparms')
         return
+
+    if rtype=='coh'
+        sig_mhat.sig =
+    elif rtype=='abs':
+        sig_mhat.sig =
+    elif rtype=='sqr':
+        sig_mhat.sig =
+    elif rtype=='iqangle':
+        sig_mhat.sig =
+    elif rtype=='iqabs':
+        sig_mhat.sig =
 
     return(sig_mthat)
 
