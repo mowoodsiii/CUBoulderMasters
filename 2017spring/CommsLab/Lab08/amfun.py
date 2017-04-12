@@ -135,8 +135,13 @@ def amrcvr(sig_rt, rtype, fcparms, fmparms=[], fBparms=[], dcblock=False):
     else:
         print('Inapprorpriate number of fcparms')
         return
-    if thetac>2*pi || thetac<-2*pi:
+    if (thetac>2*pi) or (thetac<-2*pi):
         print("WARNING: The angle for thetac is larger than usual (",thetac,").\n         Be sure that thetac is given in radians)
+
+    if rtype=='abs':
+        sig_rt.sig = abs(sig_rt.signal())
+    elif rtype=='sqr':
+        sig_rt.sig = sig_rt.signal()**2
 
     sig_mthat = sig_rt.copy()
 
@@ -156,16 +161,18 @@ def amrcvr(sig_rt, rtype, fcparms, fmparms=[], fBparms=[], dcblock=False):
         print('Inappropriate number of arguments for fBparms')
         return
 
-    if rtype=='coh'
-        sig_mhat.sig =
-    elif rtype=='abs':
-        sig_mhat.sig =
+    # Reconstruction (if anything)
+    if rtype=='abs':
+        sig_mhat.sig = sig_mhat.signal()
     elif rtype=='sqr':
-        sig_mhat.sig =
+        sig_mhat.sig = sqrt(sig_mhat.signal())
     elif rtype=='iqangle':
-        sig_mhat.sig =
+        sig_mhat.sig = sig_mhat.signal()
     elif rtype=='iqabs':
-        sig_mhat.sig =
+        sig_mhat.sig = sig_mhat.signal()
+
+    if dcblock==True:
+        sig_mhat.sig = sig_mhat.signal() - mean(sig_mhat.signal()) # Block DC
 
     return(sig_mthat)
 

@@ -142,6 +142,7 @@ def showeye(sig_rt, FB, NTd=50, dispparms=[], plotsize='large'):
         title = 'Eye Diagram for '+ sig_rt.signame +' (FB='+str(fb)+'bits/s)'
         quick.quickplot(fb*tteye,TM.T,'-b',[],[],'',title,'t/TB','Data Levels',[],[plotx,ploty])
 
+
 def showpsd1(sig_xt, ff_lim, N, subject=''):
     """
     Plot (DFT/FFT approximation to) power spectral density (PSD) of x(t).
