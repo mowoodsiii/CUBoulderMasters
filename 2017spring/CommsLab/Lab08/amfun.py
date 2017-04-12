@@ -110,6 +110,19 @@ def amrcvr(sig_rt, rtype, fcparms, fmparms=[], fBparms=[], dcblock=False):
             alfaB: BPF frequency rolloff parameter, linear rolloff over range alfaB*fBW
         dcblock: remove dc component from mthat if true
     """
+    tt = sig_rt.timeAxis()
+
+    if len(fcparms)==3:
+        [fc,thetac,Ac] = fcparms
+    elif len(fcparms)==2:
+        [fc,thetac] = fcparms
+        Ac=1
+    else:
+        print('Inapprorpriate number of fcparms')
+        return
+    if (thetac>2*pi) or (thetac<-2*pi):
+        print("WARNING: The angle for thetac is larger than usual (",thetac,").\n         Be sure that thetac is given in radians")
+
     rtype = rtype.lower()
     if rtype=='abs':
         print('Absolute Value Envelope Detector')
@@ -125,56 +138,62 @@ def amrcvr(sig_rt, rtype, fcparms, fmparms=[], fBparms=[], dcblock=False):
         print('Unsupported rtype: ', rtype)
         return
 
-    tt = sig_rt.timeAxis()
-
-    if len(fcparms)==3:
-        [fc,thetac,Ac] = fcparms
-    elif len(fcparms)==2:
-        [fc,thetac] = fcparms
-        Ac=1
-    else:
-        print('Inapprorpriate number of fcparms')
-        return
-    if (thetac>2*pi) or (thetac<-2*pi):
-        print("WARNING: The angle for thetac is larger than usual (",thetac,").\n         Be sure that thetac is given in radians)
-
-    if rtype=='abs':
-        sig_rt.sig = abs(sig_rt.signal())
-    elif rtype=='sqr':
-        sig_rt.sig = sig_rt.signal()**2
-
-    sig_mthat = sig_rt.copy()
-
-    sig_mthat.sig = 2 * Ac * sig_rt.signal() * cos(2*pi*fc*tt+thetac)
-
-    if len(fmparms)==3:
-        [fm,km,alfam] = fmparms
-        [sig_mthat,order] = filtfun.trapfilt1( sig_mthat, [fm], km, alfam)
-    elif len(fmparms)!=0:
-        print('Inappropriate number of arguments for fmparms')
-        return
-
     if len(fBparms)==4:
         [fBW,fcB,kB,alfaB] = fBparms
-        [sig_mthat,order] = filtfun.trapfilt1( sig_mthat, [fBW,fcB], kB, alfaB)
+        [sig_rt,order] = filtfun.trapfilt1( sig_rt, [fBW,fcB], kB, alfaB)
     elif len(fBparms)!=0:
         print('Inappropriate number of arguments for fBparms')
         return
 
+
+    sig_vt=sig_rt.copy()
+    if rtype=='abs':
+        sig_vt.sig = abs(sig_rt.signal())
+    elif rtype=='sqr':
+        sig_vt.sig = sig_rt.signal()**2
+    elif rtype=='coh':
+        sig_vt.sig = sig_rt.signal()*2*Ac*cos(2*pi*fc*tt+thetac)
+    elif rtype=='iqangle':
+        sig_vit=sig_vt
+        sig_vqt=sig_vt.copy()
+        sig_vit.sig=sig_rt.signal()*(2*cos(2*pi*fc*tt))
+        sig_vqt.sig=sig_rt.signal()*(-2*sin(2*pi*fc*tt))
+    elif rtype=='iqabs':
+        sig_vit=sig_vt
+        sig_vqt=sig_vt.copy()
+        sig_vit.sig=sig_rt.signal()*(2*cos(2*pi*fc*tt))
+        sig_vqt.sig=sig_rt.signal()*(-2*sin(2*pi*fc*tt))
+
+    if len(fmparms)==3:
+        [fm,km,alfam] = fmparms
+        if rtype=='abs' or rtype=='coh' or rtype=='sqr':
+            [sig_wt,order] = filtfun.trapfilt1( sig_vt, [fm], km, alfam)
+        else:
+            [sig_wqt,order] = filtfun.trapfilt1( sig_vit, [fm], km, alfam)
+            [sig_wit,order] = filtfun.trapfilt1( sig_vqt, [fm], km, alfam)
+    elif len(fmparms)!=0:
+        print('Inappropriate number of arguments for fmparms')
+        return
+    else:
+        sig_wt=sig_vt.copy()
+
     # Reconstruction (if anything)
     if rtype=='abs':
-        sig_mhat.sig = sig_mhat.signal()
+        sig_mhat = sig_wt.copy()
     elif rtype=='sqr':
-        sig_mhat.sig = sqrt(sig_mhat.signal())
+        sig_mhat = sig_wt.copy()
+        sig_mhat.sig = sqrt(sig_wt.signal())
+    elif rtype=='coh':
+        sig_mhat = sig_wt.copy()
     elif rtype=='iqangle':
-        sig_mhat.sig = sig_mhat.signal()
+        sig_mhat = atan2(sig_wqt.signal(),sig_wit.signal())
     elif rtype=='iqabs':
-        sig_mhat.sig = sig_mhat.signal()
+        sig_mhat = sqrt(sig_wqt.signal()**2+sig_wit.signal()**2)
 
     if dcblock==True:
         sig_mhat.sig = sig_mhat.signal() - mean(sig_mhat.signal()) # Block DC
 
-    return(sig_mthat)
+    return(sig_mhat)
 
 
 def qamxmtr(sig_mt, fcparms, fmparms=[]):
