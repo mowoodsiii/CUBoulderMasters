@@ -212,11 +212,35 @@ def qamxmtr(sig_mt, fcparms, fmparms=[]):
             fc: carrier frequency
             thetaci: in-phase (cos) carrier phase in deg
             thetacq: quadrature (sin) carrier phase in deg
-        fmparms = [fm, km, alfam] for LPF at fm parameters no LPF/BPF at fm if fmparms = []
+        fmparms = [fm, km, alfam] for LPF at fm parameters; no LPF at fm if fmparms = []
             fm: highest message frequency (-6dB)
             km: h(t) is truncated to |t| <= km/(2*fm)
             alfam: frequency rolloff parameter, linear rolloff over range (1-alfam)*fm <= |f| <= (1+alfam)*fm
     """
+    if len(fcparms)==4:
+        [fc,thetaci,thetacq,Ac] = fcparms
+    elif len(fcparms)==3:
+        [fc,thetaci,thetacq] = fcparms
+        Ac=1
+    else:
+        print('Inapprorpriate fcparms for SC type')
+        return
+
+    if len(fmparms)==3: # Perform LPF
+        [fm,km,alfam] = fmparms
+        [sig_mt,order] = filtfun.trapfilt_cc( sig_mt, [fm], km, alfam)
+    elif len(fmparms)!=0:
+        print('Improper LPF fparms!')
+
+    # Generate AM signal
+    tt = sig_mt.timeAxis()
+    sig_xt = sig_mt.copy()
+
+    xt_R = Ac * sig_xt.signal().real *  cos(2*pi*fc*tt+thetai)
+    xt_I = Ac * sig_xt.signal().imag * -sin(2*pi*fc*tt+thetaq)
+
+    sig_xt.sig = xt_R + xt_I
+    return sig_xt
 
 
 def qamrcvr(sig_rt, fcparms, fmparms=[]):
