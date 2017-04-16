@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: AM Receiver 01
-# Generated: Fri Apr 14 17:45:32 2017
+# Generated: Sat Apr 15 12:33:04 2017
 ##################################################
 
 if __name__ == '__main__':
@@ -71,6 +71,9 @@ class top_block(gr.top_block, Qt.QWidget):
         ##################################################
         # Blocks
         ##################################################
+        self._fcorr_range = Range(-10, 10, 0.01, 0, 200)
+        self._fcorr_win = RangeWidget(self._fcorr_range, self.set_fcorr, 'Fine Tune', "counter_slider", float)
+        self.top_layout.addWidget(self._fcorr_win)
         self._fc_options = (124000, 144000, )
         self._fc_labels = ('Station 1', 'Station 2', )
         self._fc_group_box = Qt.QGroupBox("fc")
@@ -130,17 +133,14 @@ class top_block(gr.top_block, Qt.QWidget):
 
 
 
-        self.low_pass_filter_0 = filter.fir_filter_fff(1, firdes.low_pass(
-        	1, samp_rate_2, 4000, 2000, firdes.WIN_HAMMING, 6.76))
-        self._fcorr_range = Range(-10, 10, 0.01, 0, 200)
-        self._fcorr_win = RangeWidget(self._fcorr_range, self.set_fcorr, 'Fine Tune', "counter_slider", float)
-        self.top_layout.addWidget(self._fcorr_win)
+        self.low_pass_filter_0 = filter.fir_filter_fff(16, firdes.low_pass(
+        	2, samp_rate_2, 4000, 2000, firdes.WIN_HAMMING, 6.76))
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_float*1, samp_rate_2,True)
         self.blocks_multiply_xx_0_0 = blocks.multiply_vff(1)
         self.blocks_multiply_xx_0 = blocks.multiply_vff(1)
         self.blocks_file_source_0 = blocks.file_source(gr.sizeof_float*1, '/home/maurice/Desktop/AMsignal_002.bin', True)
         self.audio_sink_0 = audio.sink(samp_rate_1, '', True)
-        self.analog_sig_source_x_0_0 = analog.sig_source_f(samp_rate_2, analog.GR_COS_WAVE, 0, 1, 0)
+        self.analog_sig_source_x_0_0 = analog.sig_source_f(samp_rate_2, analog.GR_COS_WAVE, fcorr, 1, 0)
         self.analog_sig_source_x_0 = analog.sig_source_f(samp_rate_2, analog.GR_COS_WAVE, fc, 1, 0)
 
         ##################################################
@@ -167,7 +167,7 @@ class top_block(gr.top_block, Qt.QWidget):
     def set_samp_rate_2(self, samp_rate_2):
         self.samp_rate_2 = samp_rate_2
         self.qtgui_sink_x_0.set_frequency_range(0, self.samp_rate_2)
-        self.low_pass_filter_0.set_taps(firdes.low_pass(1, self.samp_rate_2, 4000, 2000, firdes.WIN_HAMMING, 6.76))
+        self.low_pass_filter_0.set_taps(firdes.low_pass(2, self.samp_rate_2, 4000, 2000, firdes.WIN_HAMMING, 6.76))
         self.blocks_throttle_0.set_sample_rate(self.samp_rate_2)
         self.analog_sig_source_x_0_0.set_sampling_freq(self.samp_rate_2)
         self.analog_sig_source_x_0.set_sampling_freq(self.samp_rate_2)
@@ -184,6 +184,7 @@ class top_block(gr.top_block, Qt.QWidget):
 
     def set_fcorr(self, fcorr):
         self.fcorr = fcorr
+        self.analog_sig_source_x_0_0.set_frequency(self.fcorr)
 
     def get_fc(self):
         return self.fc

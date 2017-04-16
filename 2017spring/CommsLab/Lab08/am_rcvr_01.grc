@@ -384,7 +384,7 @@
     </param>
     <param>
       <key>freq</key>
-      <value>0</value>
+      <value>fcorr</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -647,7 +647,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(304, 300)</value>
+      <value>(344, 300)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -706,7 +706,7 @@
     </param>
     <param>
       <key>decim</key>
-      <value>1</value>
+      <value>16</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -726,7 +726,7 @@
     </param>
     <param>
       <key>gain</key>
-      <value>1</value>
+      <value>2</value>
     </param>
     <param>
       <key>id</key>
