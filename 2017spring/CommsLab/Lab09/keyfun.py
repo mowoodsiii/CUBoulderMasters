@@ -23,7 +23,6 @@ def askxmtr(sig_an,Fs,ptype,pparms,xtype,fcparms):
             sig_st.signal(): st = sit + 1j*sqt for 'noncoh'
                 sit: PAM signal of an*cos(pi/180*thetacn)
                 sqt: PAM signal of an*sin(pi/180*thetacn)
-        xtype: Transmitter type from list {'coh','noncoh'}
 
         *** INPUTS ***
         sig_an: sequence from class sigSequ
@@ -45,7 +44,39 @@ def askxmtr(sig_an,Fs,ptype,pparms,xtype,fcparms):
             fcparms = [fc], for {'noncoh'}
                 fc: carrier frequency in Hz
                 thetac: carrier phase in deg (0: cos, -90: sin)
+        xtype: Transmitter type from list {'coh','noncoh'}
     """
+    ptype = ptype.lower()
+    xtype = xtype.lower()
+
+    tt=sig_an.timeAxis()
+    if xtype=='coh':
+        print('Coherent Signal')
+        an = sig_an.signal()
+        thetacn = 0
+        fc = fcparms[0]
+        thetac = fcparms[1]
+        st = pamfun.pam12(an,Fs,ptype,pparms)
+    elif xtype=='noncoh':
+        print('Non-Coherent Signal')
+        an = sig_an.signal()[0]
+        thetacn = sig_an.signal()[1]
+        fc = fcparms[0]
+        thetac = 0
+        sit = pamfun.pam12(multiply(an,cos(thetacn)),Fs,ptype,pparms)
+        siq = pamfun.pam12(multiply(an,sin(thetacn)),Fs,ptype,pparms)
+        st = sit+1j*sqt
+    else:
+        print('xtype not supported')
+        return
+
+    if (thetac>2*pi) or (thetac<-2*pi) or (max(thetacn)>2*pi):
+        print("WARNING: The angle for thetac or thetacn is larger than usual.\n         Be sure that thetac is given in radians")
+
+    xt = st*cos(2*pi*fc*tt+thetac)
+
+    return(ecen.sigWave(xt,Fs,sig_an.get_t0),ecen.sigWave(st,Fs,sig_an.get_t0))
+
 
 
 def askrcvr(sig_rt,rtype,fcparms,FBparms,ptype,pparms):
