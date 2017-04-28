@@ -7,11 +7,11 @@ import ecen4652 as ecen
 import pamfun
 import filtfun
 
-def askxmtr(sig_an,Fs,ptype,pparms,xtype,fcparms):
+def askxmtr(seq_an,Fs,ptype,pparms,xtype,fcparms):
     """
     Amplitude Shift Keying (ASK) Transmitter for
     Coherent ('coh') and Non-coherent ('noncoh') ASK Signals
-    >>>>> sig_xt,sig_st = askxmtr(sig_an,Fs,ptype,pparms,xtype,fcparms) <<<<<
+    >>>>> sig_xt,sig_st = askxmtr(seq_an,Fs,ptype,pparms,xtype,fcparms) <<<<<
     where:
         *** OUTPUTS ***
         sig_xt: waveform from class sigWave
@@ -25,12 +25,12 @@ def askxmtr(sig_an,Fs,ptype,pparms,xtype,fcparms):
                 sqt: PAM signal of an*sin(pi/180*thetacn)
 
         *** INPUTS ***
-        sig_an: sequence from class sigSequ
-            sig_an.signal() = [an]                for {'coh'}
-            sig_an.signal() = [[an],[thetacn]]    for {'noncoh'}
+        seq_an: sequence from class sigSequ
+            seq_an.signal() = [an]                for {'coh'}
+            seq_an.signal() = [[an],[thetacn]]    for {'noncoh'}
                 an: N-symbol DT input sequence a_n, 0<=n<N
                 thetacn: N-symbol DT sequence theta_c[n] in degrees, used instead of thetac for {'noncoh'} ASK
-                sig_an.get_FB(): baud rate of a_n (and theta_c[n]), TB=1/FB
+                seq_an.get_FB(): baud rate of a_n (and theta_c[n]), TB=1/FB
         Fs: sampling rate of x(t), s(t)
         ptype: pulse type from list ['man','rcf','rect','rrcf','sinc','tri']
             pparms = [] for {'man','rect','tri'}
@@ -49,33 +49,43 @@ def askxmtr(sig_an,Fs,ptype,pparms,xtype,fcparms):
     ptype = ptype.lower()
     xtype = xtype.lower()
 
-    tt=sig_an.timeAxis()
     if xtype=='coh':
         print('Coherent Signal')
-        an = sig_an.signal()
-        thetacn = 0
+        an = seq_an.signal()
+        thetacn = zeros(len(an))
         fc = fcparms[0]
         thetac = fcparms[1]
-        st = pamfun.pam12(an,Fs,ptype,pparms)
+        st = pamfun.pam12(seq_an,Fs,ptype,pparms)
     elif xtype=='noncoh':
         print('Non-Coherent Signal')
-        an = sig_an.signal()[0]
-        thetacn = sig_an.signal()[1]
+        an = seq_an[0].signal()
+        thetacn = seq_an[1]
+        seq_an = seq_an[0]
         fc = fcparms[0]
         thetac = 0
-        sit = pamfun.pam12(multiply(an,cos(thetacn)),Fs,ptype,pparms)
-        siq = pamfun.pam12(multiply(an,sin(thetacn)),Fs,ptype,pparms)
-        st = sit+1j*sqt
+
+        seq_sit = seq_an.copy()
+        seq_siq = seq_an.copy()
+        seq_sit.sig = multiply(seq_an.signal(),cos(thetacn))
+        seq_siq.sig = multiply(seq_an.signal(),sin(thetacn))
+
+        sit = pamfun.pam12(seq_sit,Fs,ptype,pparms)
+        siq = pamfun.pam12(seq_siq,Fs,ptype,pparms)
+
+        st = sit.signal()+1j*siq.signal()
     else:
         print('xtype not supported')
         return
 
-    if (thetac>2*pi) or (thetac<-2*pi) or (max(thetacn)>2*pi):
+    tt=arange(len(seq_an.signal()))/float(seq_an.FB)
+
+    print(thetacn)
+    if thetac>2*pi or thetac<-2*pi or max(thetacn)>2*pi:
         print("WARNING: The angle for thetac or thetacn is larger than usual.\n         Be sure that thetac is given in radians")
 
     xt = st*cos(2*pi*fc*tt+thetac)
 
-    return(ecen.sigWave(xt,Fs,sig_an.get_t0),ecen.sigWave(st,Fs,sig_an.get_t0))
+    return(ecen.sigWave(xt,Fs,seq_an.get_t0),ecen.sigWave(st,Fs,seq_an.get_t0))
 
 
 
