@@ -6,8 +6,9 @@ from pylab import *
 import ecen4652 as ecen
 import pamfun
 import filtfun
+import quick
 
-def askxmtr(seq_an,Fs,ptype,pparms,xtype,fcparms):
+def askxmtr(seq_an,Fs,ptype,pparms,xtype,fcparms,plotparms=['noplot']):
     """
     Amplitude Shift Keying (ASK) Transmitter for
     Coherent ('coh') and Non-coherent ('noncoh') ASK Signals
@@ -49,43 +50,39 @@ def askxmtr(seq_an,Fs,ptype,pparms,xtype,fcparms):
     ptype = ptype.lower()
     xtype = xtype.lower()
 
+    Ac=1
     if xtype=='coh':
         print('Coherent Signal')
         an = seq_an.signal()
         thetacn = zeros(len(an))
         fc = fcparms[0]
         thetac = fcparms[1]
-        st = pamfun.pam12(seq_an,Fs,ptype,pparms)
+        st = pamfun.pam12(seq_an,Fs,ptype,pparms,plotparms)
+        tt=quick.quicktt(st.signal(),Fs)
+        xt = Ac*st.signal()*cos(2*pi*fc*tt+thetac)
     elif xtype=='noncoh':
         print('Non-Coherent Signal')
         an = seq_an[0].signal()
         thetacn = seq_an[1]
-        seq_an = seq_an[0]
+        if thetacn=='rand':
+            thetacn=(pi/2.0)*rand(len(an))
+        seq_an_sit = seq_an[0].copy()
+        seq_an_sqt = seq_an[0].copy()
+        seq_an_sit.sig = multiply(an,cos(thetacn))
+        seq_an_sqt.sig = multiply(an,sin(thetacn))
         fc = fcparms[0]
         thetac = 0
-
-        seq_sit = seq_an.copy()
-        seq_siq = seq_an.copy()
-        seq_sit.sig = multiply(seq_an.signal(),cos(thetacn))
-        seq_siq.sig = multiply(seq_an.signal(),sin(thetacn))
-
-        sit = pamfun.pam12(seq_sit,Fs,ptype,pparms)
-        siq = pamfun.pam12(seq_siq,Fs,ptype,pparms)
-
-        st = sit.signal()+1j*siq.signal()
+        sit = pamfun.pam12(seq_an_sit,Fs,ptype,pparms,plotparms)
+        sqt = pamfun.pam12(seq_an_sqt,Fs,ptype,pparms,plotparms)
+        st = sit.copy()
+        st.sig = sit.signal() + 1j*(sqt.signal())
+        tt=quick.quicktt(sit.signal(),Fs)
+        xt=multiply(sit.signal(),cos(2*pi*fc*tt))+multiply(sqt.signal(),-sin(2*pi*fc*tt))
     else:
         print('xtype not supported')
         return
 
-    tt=arange(len(seq_an.signal()))/float(seq_an.FB)
-
-    print(thetacn)
-    if thetac>2*pi or thetac<-2*pi or max(thetacn)>2*pi:
-        print("WARNING: The angle for thetac or thetacn is larger than usual.\n         Be sure that thetac is given in radians")
-
-    xt = st*cos(2*pi*fc*tt+thetac)
-
-    return(ecen.sigWave(xt,Fs,seq_an.get_t0),ecen.sigWave(st,Fs,seq_an.get_t0))
+    return(ecen.sigWave(xt,Fs,0),ecen.sigWave(st.signal(),Fs,0))
 
 
 

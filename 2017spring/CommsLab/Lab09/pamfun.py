@@ -142,7 +142,7 @@ def pam12(sig_an, Fs, ptype, pparms=[], plotparms=[]):
         print('Resetting ttp')
         ttp=quicktt(st,Fs)
     if (plotparms != []) and ((plotparms[0] == 'nopulse') or (plotparms[0] == 'noplot')):
-        print('%s pulse created but not plotted...' % longptype)
+        doNothing=1
     else:
         quickplot(ttp,pt,'-b',[],[],'',longptype+' Interpolation Pulse','Time','p(t)')
 
