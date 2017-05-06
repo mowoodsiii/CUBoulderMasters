@@ -152,7 +152,7 @@ def pam12(sig_an, Fs, ptype, pparms=[], plotparms=[]):
     an = (an*abs(st[0::Sb]))[1:-1] # scale data sequence to fit interpolation s(t) and remove added leading and trailing zeros
 
     if (plotparms != []) and (plotparms[0] == 'noplot'):
-        print('Supressing plotting result')
+        doNothing=1
     else:
         quickplot(tts,st,'-b',ttan,an,'or','Interpolated Data using a '+longptype+' pulse','Time','s(t)',plotparms[1:])
 

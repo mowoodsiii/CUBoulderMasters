@@ -52,16 +52,15 @@ def askxmtr(seq_an,Fs,ptype,pparms,xtype,fcparms,plotparms=['noplot']):
 
     Ac=1
     if xtype=='coh':
-        print('Coherent Signal')
+        print('XMTR: Coherent Signal')
         an = seq_an.signal()
         thetacn = zeros(len(an))
-        fc = fcparms[0]
-        thetac = fcparms[1]
+        [fc,thetac] = fcparms
         st = pamfun.pam12(seq_an,Fs,ptype,pparms,plotparms)
         tt=quick.quicktt(st.signal(),Fs)
         xt = Ac*st.signal()*cos(2*pi*fc*tt+thetac)
     elif xtype=='noncoh':
-        print('Non-Coherent Signal')
+        print('XMTR: Non-Coherent Signal')
         an = seq_an[0].signal()
         thetacn = seq_an[1]
         if thetacn=='rand':
@@ -95,7 +94,7 @@ def askrcvr(sig_rt,rtype,fcparms,FBparms,ptype,pparms):
             *** OUTPUTS ***
             sig_bn: sequence from class sigSequ
                 sig_bn.signal(): received DT sequence b[n]
-                sig_bt: waveform from class sigWave
+            sig_bt: waveform from class sigWave
                 sig_bt.signal(): received 'CT' PAM signal b(t)
             sig_wt: waveform from class sigWave
                 sig_wt.signal(): wt = wit + 1j*wqt
@@ -126,6 +125,31 @@ def askrcvr(sig_rt,rtype,fcparms,FBparms,ptype,pparms):
                     alpha: Rolloff parameter for {'rcf','rrcf'}, 0<=alpha<=1
                     beta: Kaiser window parameter for {'sinc'}
     """
+    rt = sig_rt.signal()
+    tt = sig_rt.timeAxis()
+
+    ptype = ptype.lower()
+    rtype = rtype.lower()
+
+    if rtype=='coh':
+        print('RCVR: Coherent Signal')
+        fc = fcparms[0]
+        thetac = fcparms[1]
+    elif rtype=='noncoh':
+        print('RCVR: Non-Coherent Signal')
+        fc = fcparms[0]
+
+    [FB,dly] = FBparms
+
+    if (ptype=='rcf') || (ptype=='rrcf'):
+        [k,alpha] = pparms
+    elif (ptype=='sinc'):
+        [k,beta] = pparms
+
+
+
+
+    return(sig_bn , sig_bt , sig_wt , ixn)
 
 def fskxmtr(M,sig_dn,Fs,ptype,pparms,xtype,fcparms):
     """
