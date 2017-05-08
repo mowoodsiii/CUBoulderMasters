@@ -9,15 +9,21 @@ def pampt(sps, ptype, pparms=[], plot='', duty=1):
     """
     PAM pulse p(t) = p(n*TB/sps) generation
     >>>>> pt = pampt(sps, ptype, pparms) <<<<<
-    where  sps: samples per symbol (Fs/FB)
+    where:
+        *** INPUTS ***
+        sps: samples per symbol (Fs/FB)
         ptype: pulse type ('rect', 'sinc', 'tri', 'man', 'rcf', 'rrcf')
-        pparms not used for 'rect', 'tri'
-        pparms = [k, beta] for sinc
-            k:     "tail" truncation parameter for (truncates p(t) to -k*sps <= n < k*sps)
-            beta:  Kaiser window parameter for 'sinc'
+        pparms: not used for 'rect', 'tri'
+            pparms = [k, beta] for sinc
+                k:     "tail" truncation parameter for (truncates p(t) to -k*sps <= n < k*sps)
+                beta:  Kaiser window parameter for 'sinc'
+
+        *** OUTPUTS ***
         pt: pulse p(t) at t=n*TB/sps
+
     Note: In terms of sampling rate Fs and baud rate FB, sps = Fs/FB
     """
+    sps = int(sps)
     if ptype is 'rect':
         pt = np.ones(sps)
     elif ptype is 'tri':

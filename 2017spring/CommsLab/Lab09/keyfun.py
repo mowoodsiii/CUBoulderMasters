@@ -89,10 +89,10 @@ def askrcvr(sig_rt,rtype,fcparms,FBparms,ptype,pparms):
     """
         Amplitude Shift Keying (ASK) Receiver for
         Coherent ('coh') and Non-coherent ('noncoh') ASK Signals
-        >>>>> sig_bn,sig_bt,sig_wt,ixn = askrcvr(sig_rt,rtype,fcparms,FBparms,ptype,pparms) <<<<<
+        >>>>> seq_bn,sig_bt,sig_wt,ixn = askrcvr(sig_rt,rtype,fcparms,FBparms,ptype,pparms) <<<<<
         where:
             *** OUTPUTS ***
-            sig_bn: sequence from class sigSequ
+            seq_bn: sequence from class sigSequ
                 sig_bn.signal(): received DT sequence b[n]
             sig_bt: waveform from class sigWave
                 sig_bt.signal(): received 'CT' PAM signal b(t)
@@ -125,7 +125,7 @@ def askrcvr(sig_rt,rtype,fcparms,FBparms,ptype,pparms):
                     alpha: Rolloff parameter for {'rcf','rrcf'}, 0<=alpha<=1
                     beta: Kaiser window parameter for {'sinc'}
     """
-    rt = sig_rt.signal()
+    rt = sig_rt.signal() # pg5 of lab09.pdf
     tt = sig_rt.timeAxis()
 
     ptype = ptype.lower()
@@ -133,23 +133,35 @@ def askrcvr(sig_rt,rtype,fcparms,FBparms,ptype,pparms):
 
     if rtype=='coh':
         print('RCVR: Coherent Signal')
-        fc = fcparms[0]
-        thetac = fcparms[1]
+        [fc,thetac] = fcparms
     elif rtype=='noncoh':
         print('RCVR: Non-Coherent Signal')
-        fc = fcparms[0]
+        fc = fcparms
+        thetac=0
 
     [FB,dly] = FBparms
 
-    if (ptype=='rcf') || (ptype=='rrcf'):
+    if (ptype=='rcf') or (ptype=='rrcf'):
         [k,alpha] = pparms
     elif (ptype=='sinc'):
         [k,beta] = pparms
 
+    sig_vmit = sig_rt.copy()
+    sig_vmqt = sig_rt.copy()
+    sig_vmit.sig = multiply(2*cos(2*pi*fc*tt+thetac),rt)
+    sig_vmqt.sig = multiply(-2*sin(2*pi*fc*tt+thetac),rt)
 
+    [win,wit,ixn] = pamfun.pamrcvr10(sig_vmit, FBparms, ptype, pparms)
+    [wqn,wqt,ixn] = pamfun.pamrcvr10(sig_vmqt, FBparms, ptype, pparms)
 
+    sig_bt = sig_rt.copy()
+    sig_bt.sig = sqrt((wit**2)+(wqt**2))
+    seq_bn = ecen.sigSequ(sig_bt.signal()[ixn],FB)
 
-    return(sig_bn , sig_bt , sig_wt , ixn)
+    sig_wt = sig_rt.copy()
+    sig_wt.sig = wit + (1j*wqt)
+
+    return(seq_bn , sig_bt , sig_wt , ixn)
 
 def fskxmtr(M,sig_dn,Fs,ptype,pparms,xtype,fcparms):
     """

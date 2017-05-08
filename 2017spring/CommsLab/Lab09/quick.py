@@ -5,7 +5,7 @@ from pylab import *
 import numpy as np
 import matplotlib.pyplot as plt
 
-def quickplot(plotx1,ploty1,style1="b-",plotx2=[],ploty2=[],style2="or",title="",xname="",yname="",interval=[],figdim=[14,4]):
+def quickplot(plotx1,ploty1,style1="b-",plotx2=[],ploty2=[],style2="or",title="",xname="",yname="",interval=[],xylim=[],figdim=[14,4]):
     """
     Plot a data series,
     V2.1 Includes zoom/window option
@@ -92,8 +92,12 @@ def quickplot(plotx1,ploty1,style1="b-",plotx2=[],ploty2=[],style2="or",title=""
     except ValueError:
         miny=np.amin(ploty1)
 
-    plt.xlim([minx-(0.05*(maxx-minx)),maxx+(0.05*(maxx-minx))])
-    plt.ylim([miny-(0.1*(maxy-miny)),maxy+(0.1*(maxy-miny))])
+    if xylim==[]:
+        plt.xlim([minx-(0.05*(maxx-minx)),maxx+(0.05*(maxx-minx))])
+        plt.ylim([miny-(0.1*(maxy-miny)),maxy+(0.1*(maxy-miny))])
+    else:
+        plt.xlim(xylim[0:2])
+        plt.ylim(xylim[2:4])
     grid()
     plt.show()
     return

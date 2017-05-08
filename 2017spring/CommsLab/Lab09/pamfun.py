@@ -10,26 +10,29 @@ def pam12(sig_an, Fs, ptype, pparms=[], plotparms=[]):
     """
     Pulse amplitude modulation: a_n -> s(t), -TB/2<=t<(N-1/2)*TB,
     V1.1 for 'man', 'rcf', 'rect', 'sinc', and 'tri' pulse types.
-    >>>>> sig_st = pam11(sig_an, Fs, ptype, pparms) <<<<<
-    where  sig_an: sequence from class sigSequ
-        sig_an.signal():  N-symbol DT input sequence a_n, 0 <= n < N
-        sig_an.get_FB():  Baud rate of a_n, TB=1/FB
+    >>>>> sig_st,ixn = pam11(sig_an, Fs, ptype, pparms) <<<<<
+    where
+        *** INPUTS ***
+        sig_an: sequence from class sigSequ
+            sig_an.signal():  N-symbol DT input sequence a_n, 0 <= n < N
+            sig_an.get_FB():  Baud rate of a_n, TB=1/FB
         Fs:    sampling rate of s(t)
-        ptype: pulse type from list
-        ('man','rcf','rect','sinc','tri')
+        ptype: pulse type from list ('man','rcf','rect','sinc','tri')
         pparms not used for 'man','rect','tri'
-        pparms = [k, alpha] for 'rcf'
-        pparms = [k, beta]  for 'sinc'
-            k:     "tail" truncation parameter for 'rcf','sinc' (truncates p(t) to -k*TB <= t < k*TB)
-            alpha: Rolloff parameter for 'rcf', 0<=alpha<=1
-            beta:  Kaiser window parameter for 'sinc'
-        plotparms = [direction, interval] - Options to fcus/window the plot ouput (see quick.py)
-            direction: Where to window 'first', 'last', or 'middle'
+            pparms = [k, alpha] for 'rcf'
+            pparms = [k, beta]  for 'sinc'
+                k:     "tail" truncation parameter for 'rcf','sinc' (truncates p(t) to -k*TB <= t < k*TB)
+                alpha: Rolloff parameter for 'rcf', 0<=alpha<=1
+                beta:  Kaiser window parameter for 'sinc'
+        plotparms = [window, interval] - Options to fcus/window the plot ouput (see quick.py)
+            window: Where to window 'first', 'last', or 'middle'
             interval: Width of window (in datapoints)
+
+        *** OUTPUTS ***
         sig_st: waveform from class sigWave
-        sig_st.timeAxis():  time axis for s(t), starts at -TB/2
-        sig_st.signal():    CT output signal s(t), -TB/2<=t<(N-1/2)*TB,
-        with sampling rate Fs
+            sig_st.timeAxis():  time axis for s(t), starts at -TB/2
+            sig_st.signal():    CT output signal s(t), -TB/2<=t<(N-1/2)*TB with sampling rate Fs
+        ixn
     """
 
 # ***** Set variables and manage data formatting *****
@@ -142,7 +145,7 @@ def pam12(sig_an, Fs, ptype, pparms=[], plotparms=[]):
         print('Resetting ttp')
         ttp=quicktt(st,Fs)
     if (plotparms != []) and ((plotparms[0] == 'nopulse') or (plotparms[0] == 'noplot')):
-        doNothing=1
+        doNothing=1 # print('%s pulse created but not plotted...' % longptype)
     else:
         quickplot(ttp,pt,'-b',[],[],'',longptype+' Interpolation Pulse','Time','p(t)')
 
@@ -152,7 +155,7 @@ def pam12(sig_an, Fs, ptype, pparms=[], plotparms=[]):
     an = (an*abs(st[0::Sb]))[1:-1] # scale data sequence to fit interpolation s(t) and remove added leading and trailing zeros
 
     if (plotparms != []) and (plotparms[0] == 'noplot'):
-        doNothing=1
+        doNothing=1 # print('Supressing plotting result')
     else:
         quickplot(tts,st,'-b',ttan,an,'or','Interpolated Data using a '+longptype+' pulse','Time','s(t)',plotparms[1:])
 
@@ -160,16 +163,19 @@ def pam12(sig_an, Fs, ptype, pparms=[], plotparms=[]):
 
 
 
-def randompam(t=1,ptype='rect',pparms=[20,0],L=2,FB=100,Fs=44100):
+def randompam(t=1,ptype='rect',pparms=[20,0],FB=100,Fs=44100,polarity='bi',L=2):
     """
     Generate a random PAM signal
     """
-    N = t*FB # data points
+    N = int(t*FB) # data points
     dn = around(rand(N)) # random unipolar binary signal
-    an = (dn*L)-float(L/2) #polar binary
-    sig_an = ecen.sigSequ(an,FB)
-    intrp_an = pam11(sig_an, Fs, ptype,pparms,['noplot'])
-    return intrp_an
+    if polarity == 'bi':
+        an = (dn*L)-float(L/2) #polar binary
+    else:
+        an = dn
+    seq_an = ecen.sigSequ(an,FB)
+    sig_st = pam12(seq_an, Fs, ptype,pparms,['nopulse'])
+    return sig_st,seq_an
 
 def whitenoise(t=1,nfL=10000,Fs=44100):
     """
@@ -187,6 +193,7 @@ def pamrcvr10(sig_rt, FBparms, ptype, pparms=[]):
     V1.0 for 'man', 'rcf', 'rect', 'rrcf', 'sinc', and 'tri' pulse types.
     >>>>> bn, bt, ixn = pamrcvr10(tt, rt, FBparms, ptype, pparms) <<<<<
     where
+        *** INPUTS ***
         tt: time axis for r(t)
         rt: received (noisy) PAM signal r(t)
         FBparms: = [FB, dly]
@@ -200,6 +207,8 @@ def pamrcvr10(sig_rt, FBparms, ptype, pparms=[]):
             k: "tail" truncation parameter for 'rcf','rrcf','sinc' (truncates p(t) to -k*TB <= t < k*TB)
             alpha: rolloff parameter for ('rcf','rrcf'), 0<=alpha<=1
             beta: Kaiser window parameter for 'sinc'
+
+        *** OUTPUTS ***
         bn: received DT sequence after sampling at t=n*TB+t0
         bt: received PAM signal b(t) at output of matched filter
         ixn: indexes where b(t) is sampled to obtain b_n

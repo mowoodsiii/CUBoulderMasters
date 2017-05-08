@@ -24,9 +24,16 @@ def asc2bin(txt, bits=8):
    dn = reshape(B,B.size)
    return dn         # Serial binary output
 
-def bin2asc(dn, bits, flg=1):
+def bin2asc(dn, bits, threshold=0):
    n = int(len(dn)) # number of bits
    N = int(floor(n/float(abs(bits)))) # number of letters
+
+
+   if threshold!=0:
+       ihigh = (dn > threshold)
+       ilow  = (dn <= threshold)
+       dn[ihigh] = 1
+       dn[ilow]  = 0
 
    bitString = []
    for i in range(N):
