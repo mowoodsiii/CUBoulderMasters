@@ -163,10 +163,10 @@ def askrcvr(sig_rt,rtype,fcparms,FBparms,ptype,pparms):
 
     return(seq_bn , sig_bt , sig_wt , ixn)
 
-def fskxmtr(M,sig_dn,Fs,ptype,pparms,xtype,fcparms):
+def fskxmtr(M,seq_dn,Fs,ptype,pparms,xtype,fcparms):
     """
         M-ary Frequency Shift Keying (FSK) Transmitter for
-        Choherent ('coh'), Non-coherent ('noncoh'), and
+        Coherent ('coh'), Non-coherent ('noncoh'), and
         Continuous Phase ('cpfsk') FSK Signals
         >>>>> sig_xt = fskxmtr(M,sig_dn,Fs,ptype,pparms,xtype,fcparms) <<<<<
         where:
@@ -178,12 +178,12 @@ def fskxmtr(M,sig_dn,Fs,ptype,pparms,xtype,fcparms):
             *** INPUTS ***
             M: number of distinct symbol values in d[n]
             xtype: Transmitter type from set {'coh','noncoh','cpfsk'}
-            sig_dn: sequence from class sigSequ
-                sig_dn.signal() = [dn] for ['coh','cpfsk']
-                sig_dn.signal() = [[dn],[thetacn]] for ['noncoh']
+            seq_dn: sequence from class sigSequ
+                seq_dn.signal() = [dn] for ['coh','cpfsk']
+                seq_dn.signal() = [[dn],[thetacn]] for ['noncoh']
                     dn: M-ary (0,1,..,M-1) N-symbol DT input sequence d_n
                     thetacn: N-symbol DT sequence theta_c[n] in degrees, used instead of thetac0..thetacM-1 for {'noncoh'} FSK
-                sig_dn.get_FB(): baud rate of d_n (and theta_c[n]), TB=1/FB
+                seq_dn.get_FB(): baud rate of d_n (and theta_c[n]), TB=1/FB
             Fs: sampling rate of x(t)
             ptype: pulse type from set {'man','rcf','rect','rrcf','sinc','tri'}
             pparms:
@@ -202,23 +202,68 @@ def fskxmtr(M,sig_dn,Fs,ptype,pparms,xtype,fcparms):
                     fc: carrier frequency for {'cpfsk'}
                     deltaf: frequency spacing for {'cpfsk'} for dn=0 -> fc, dn=1 -> fc+deltaf, dn=2 -> fc+2*deltaf, etc
     """
+    FB = seq_dn.get_FB()
+    Ac = 1
+    if xtype=='noncoh':
+        [dn,thetacn] = seq_dn.signal()
+        fcm = fcparms
+        if thetacn == '' or thetacn == 'rand':
+            thetacm = (pi/2.0)*rand(M)
+        else:
+            thetacm = thetacn
+    elif xtype=='coh':
+        dn = seq_dn.signal()
+        thetacn = zeros(len(dn))
+        [fcm,thetacm] = fcparms
+    elif xtype=='cpfsk':
+        dn = seq_dn.signal()
+        [fc,deltaf] = fcparms
+    else:
+        print('Not a valid xtype')
+        return
 
-def fskrcvr(M,tt,rt,rtype,fcparms,FBparms,ptype,pparms):
+    # If the signal is bipolar, shift it up to be unipolar
+    if min(dn)<0.0:
+        dn = dn + ((M/2.0)-0.5)
+        if max(dn)!=float(M-1):
+            print('WARNING: The received signal may not contain logic that is interger-spaced (required for current working version)')
+    print(dn)
+    for m in arange(0,M):
+        deln = ones(len(dn))
+        deln[where(dn!=m)] = 0
+        smt = pamfun.pam12(ecen.sigSequ(deln,FB),Fs,ptype,pparms,['nopulse'])
+        tt = smt.timeAxis()
+        try:
+            xmt = add(xmt , smt.signal()*Ac*cos(2*pi*fcm[m]*tt+thetacm[m]))
+        except NameError:
+            Ac*cos(2*pi*fcm[m]*tt+thetacm[m])
+            xmt = smt.signal()*Ac*cos(2*pi*fcm[m]*tt+thetacm[m])
+
+    sig_xt = ecen.sigWave(xmt,Fs)
+    titlestr = 'Transmitted FSK Signal :: M=' + str(int(M))
+    if len(fcm)<=3:
+        titlestr = titlestr + '\n'
+        for m in arange(0,len(fcm)):
+            titlestr = titlestr + '$f_{c' + str(m) + '}=' + str(fcm[m]) + 'Hz$, '
+    quick.quickplot(sig_xt.timeAxis(),sig_xt.signal(),'-r',[],[],'',titlestr,'Time [s]','x(t)')
+    return(sig_xt)
+
+
+def fskrcvr(M,sig_rt,rtype,fcparms,FBparms,ptype,pparms):
     """
         M-ary Frequency Shift Keying (FSK) Receiver for
         Coherent ('coh'), Non-coherent ('noncoh'), and
         Phase Detector ('phdet') FSK Reception
-        >>>>> sig_bn,sig_wt,ixn =
-        fskrcvr(M,sig_rt,rtype,fcparms,FBparms,ptype,pparms) <<<<<
+        >>>>> sig_bn,sig_wt,ixn = fskrcvr(M,sig_rt,rtype,fcparms,FBparms,ptype,pparms) <<<<<
         where:
             *** OUTPUTS ***
             sig_bn: sequence from class sigSequ
                 sig_bn.signal(): received DT sequence b[n]
-                sig_wt: waveform from class sigWave
+            sig_wt: waveform from class sigWave
                 sig_wt.signal(): wt = [[w0it+1j*w0qt],[w1it+1j*w1qt],..., [wM-1it+1j*wM-1qt]]
                     wmit: m-th in-phase matched filter output
                     wmqt: m-th quadrature matched filter output
-                    ixn: sampling time indexes for b(t)->b[n], w(t)->w[n]
+            ixn: sampling time indexes for b(t)->b[n], w(t)->w[n]
 
             *** INPUTS ***
             M: number of distinct FSK frequencies
@@ -246,3 +291,42 @@ def fskrcvr(M,tt,rt,rtype,fcparms,FBparms,ptype,pparms):
                     alpha: Rolloff parameter for {'rcf','rrcf'}, 0<=alpha<=1
                     beta: Kaiser window parameter for {'sinc'}
     """
+    rt = sig_rt.signal()
+    tt = sig_rt.timeAxis()
+    Fs = sig_rt.get_Fs()
+
+    if rtype=='coh':
+        [fcm,thetacm] = fcparms
+        for m in arange(0,M):
+            vmt = rt * 2*cos(2*pi*fcm[m]*tt+thetacm[m])
+            [wmn,wmt,ixn] = pamfun.pamrcvr10(ecen.sigWave(vmt,Fs), FBparms, ptype, pparms,'noplot')
+            # quick.quickplot(quick.quicktt(wmt,Fs),wmt)
+            try:
+                wt = concatenate(([wt],[wmt]),0)
+            except NameError:
+                wt = wmt
+        wn = wt
+    elif rtype=='noncoh':
+        fcm = fcparms
+        for m in arange(0,M):
+            vmit = rt * 2*cos(2*pi*fcm[m]*tt)
+            vmqt = rt * -2*sin(2*pi*fcm[m]*tt)
+            [wmin,wmit,ixn] = pamfun.pamrcvr10(ecen.sigWave(vmit,Fs), FBparms, ptype, pparms,'noplot')
+            [wmqn,wmqt,ixn] = pamfun.pamrcvr10(ecen.sigWave(vmqt,Fs), FBparms, ptype, pparms,'noplot')
+            wmt = wmit + 1j*wmqt
+            wmn = sqrt(square(wmit)+square(wmqt))
+            try:
+                wt = concatenate(([wt],[wmt]),0)
+                wn = concatenate(([wn],[wmn]),0)
+            except NameError:
+                wt = wmt
+                wn = wmn
+    elif rtype=='phdet':
+        [fc,deltaf] = fcparms
+        print('phdet not implamented yet')
+
+    sig_wt = ecen.sigWave(wt,Fs)
+    bn = wn.argmax(axis=0)
+    sig_bn = ecen.sigWave(bn[ixn],Fs)
+
+    return sig_bn,sig_wt,ixn

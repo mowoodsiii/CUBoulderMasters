@@ -232,13 +232,13 @@ def showpsd(sig_xt, ff_lim, N, subject='', zoom=''):
 
     if zoom=='zoom':
         maxguess = argmax(Sxf)
-        strgt = 'PSD Zoomed on Largest Peak ($f_{max}$~' + str(ff[maxguess]) + 'Hz)'
-        quick.quickplot(ff[maxguess-300:maxguess+300],Sxf[maxguess-300:maxguess+300],'-b',[],[],'',strgt,'f [Hz]','$S_x(f)$')
+        strgt = 'PSD Zoomed on Largest Peak ($f_{max}$~' + str(ff[maxguess]) + 'Hz'
+        quick.quickplot(ff[maxguess-500:maxguess+500],Sxf[maxguess-500:maxguess+500],'-b',[],[],'',strgt,'f [Hz]','$S_x(f)$')
         show()
 
     return Sxf,ff
 
-def showaskscatter(sig_wt,ixn):
+def showscatter(sig_wt,ixn):
     """
     Plot scatter plot of received ASK signal
     >>>>> showpsd(sig_wt) <<<<<

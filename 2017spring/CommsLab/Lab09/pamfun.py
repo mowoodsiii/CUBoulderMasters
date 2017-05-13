@@ -186,7 +186,7 @@ def whitenoise(t=1,nfL=10000,Fs=44100):
     sig_nt = pam11(sig_nn,Fs,'rcf',[20, 0.2],['noplot']) #Bandlimited noise n(t), rate Fs
     return sig_nt
 
-def pamrcvr10(sig_rt, FBparms, ptype, pparms=[]):
+def pamrcvr10(sig_rt, FBparms, ptype, pparms=[], plotparms=[]):
     """
     Pulse amplitude modulation receiver with matched filter:
     r(t) -> b(t) -> bn.
@@ -288,9 +288,9 @@ def pamrcvr10(sig_rt, FBparms, ptype, pparms=[]):
     hRt = Fs/sum(np.power(pt,2.0))*hRt # h_R(t) normalized
     # ***** Filter r(t) with matched filter h_R(t)
     bt = convolve(rt,hRt)/float(Fs) # Matched filter b(t)=r(t)*h_R(t)
-    bt = bt[-ixpL-1:len(tt)-ixpL-1] # Trim b(t)
+    bt = bt[-ixpL:len(tt)-ixpL] # Trim b(t)
     # ***** Sample b(t) at t=n*TB+t0 to obtain b_n *****
-    N = ceil(FB*(tt[-1]-tt[0])) # Number of symbols
+    N = ceil(FB*(tt[-1]-tt[0]))# Number of symbols
     ixn = array(around((arange(N)+0.5+t0)*Fs/float(FB)),int64) # Sampling indexes
     ix = where(logical_and(ixn>=0,ixn<len(tt)))[0]
     ixn = ixn[ix] # Trim to existing indexes
