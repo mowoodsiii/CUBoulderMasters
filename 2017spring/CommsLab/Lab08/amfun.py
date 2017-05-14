@@ -264,3 +264,111 @@ def qamrcvr(sig_rt, fcparms, fmparms=[]):
             km: h(t) is truncated to |t| <= km/(2*fm)
             alfam: frequency rolloff parameter, linear rolloff over range (1-alfam)*fm <= |f| <= (1+alfam)*fm
     """
+
+def qamxmtrB(sig_mt, fcparms, fmparms=[]):
+	"""
+	Quadrature Amplitude Modulation (QAM) Transmitter with
+	complex-valued input/output signals
+	>>>>> sig_xt = qamxmtr(sig_mt, fcparms, fmparms) <<<<<
+	where
+	sig_xt: 			waveform from class sigWave
+	sig_xt.signal():	complex-valued QAM signal
+	sig_xt.timeAxis(): 	time axis for x(t)
+	sig_mt.signal():	complex-valued (wideband) message signal
+	sig_mt.timeAxis(): 	time axis for m(t)
+	fcparms: 			= [fc, thetaci, thetacq]
+	fc:					carrier frequency
+	thetaci: 			in-phase (cos) carrier phase in deg
+	thetacq: 			quadrature (sin) carrier phase in deg
+	fmparms:	 		= [fm, km, alfam] for LPF at fm parameters
+						no LPF/BPF at fm if fmparms = []
+	fm:					highest message frequency (-6dB)
+	km:					h(t) is truncated to |t| <= km/(2*fm)
+	alfam:				frequency rolloff parameter, linear
+						rolloff over range (1-alfam)*fm <= |f| <= (1+alfam)*fm
+	"""
+
+	# ***** Step 0: Get Signal Parameters *****
+	fc = fcparms[0]
+	thetaci = fcparms[1]
+	thetacq = fcparms[2]
+
+	if fmparms != []:
+		fm = fmparms[0]
+		km = fmparms[1]
+		alpham = fmparms[2]
+	else:
+		print('Warning: no fmparms specified')
+
+	mt = sig_mt.signal()	# Input signal
+	tmt = sig_mt.timeAxis()	# Get time axis
+	Fs = sig_mt.get_Fs()	# Sampling rate
+
+	if fmparms != 0:
+		[sig_mt_f, order]= filtfun.trapfilt_cc(sig_mt, [fm, 0], km, alpham, [0, 0])
+	else:
+		print('Warning: no low pass frequency provided and message not LPFd')
+
+	xt = mt*cos(2*pi*fc*tmt+thetaci) + mt*sin(2*pi*fc*tmt+thetacq)
+
+	# ***** Step : Return *****
+	return ecen.sigWave(xt, Fs, sig_mt.get_t0())
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+def qamrcvrB(sig_rt, fcparms, fmparms=[], plot=[]):
+	"""
+	Quadrature Amplitude Modulation (QAM) Receiver with
+	complex-valued input/output signals
+	>>>>> sig_mthat = qamrcvr(sig_rt, fcparms, fmparms) <<<<<
+	where
+	sig_mthat: 				waveform from class sigWave
+	sig_mthat.signal():		complex-valued demodulated message signal
+	sig_mthat.timeAxis(): 	time axis for mhat(t)
+	sig_rt: 				waveform from class sigWave
+	sig_rt.signal():		received QAM signal (real- or complex-valued)
+	sig_rt.timeAxis(): 		time axis for r(t)
+	fcparms: 				= [fc, thetaci, thetacq]
+	fc:						carrier frequency
+	thetaci: 				in-phase (cos) carrier phase in deg
+	thetacq: 				quadrature (sin) carrier phase in deg
+	fmparms: 				= [fm, km, alfam]
+	 						for LPF at fm parameters
+							no LPF at fm if fmparms = []
+	fm:						highest message frequency (-6 dB)
+	km:						h(t) is truncated to |t| <= km/(2*fm)
+	alfam:					frequency rolloff parameter, linear
+							rolloff over range (1-alfam)*fm <= |f| <= (1+alfam)*fm
+	"""
+	# ***** Step 0: Get Signal Parameters *****
+	fc = fcparms[0]
+	thetaci = fcparms[1]
+	thetacq = fcparms[2]
+
+	if fmparms != []:
+		fm = fmparms[0]
+		km = fmparms[1]
+		alpham = fmparms[2]
+	else:
+		print('Warning: no fmparms specified, LPF will not work')
+
+	rt = sig_rt.signal()	# Input signal
+	trt = sig_rt.timeAxis()	# Get time axis
+	Fs = sig_rt.get_Fs()	# Sampling rate
+	t0 = sig_rt.get_t0()    # Get starting time
+
+	# ***** AM demodulation *****
+	vit = rt*cos(2*pi*fc*trt+pi/180.0*thetaci)
+	vqt = -rt*sin(2*pi*fc*trt+pi/180.0*thetacq)
+
+	vit = ecen.sigWave(vit, Fs, t0)
+	vqt = ecen.sigWave(vqt, Fs, t0)
+
+	[mit, orderi] = filtfun.trapfilt_cc(vit, [fm, 0], km, alpham, [0, 0])
+	[mqt, orderq] = filtfun.trapfilt_cc(vqt, [fm, 0], km, alpham, [0, 0])
+
+	# TODO how do I form xt, what is the output?
+	xL = mit.sig + 1j*mqt.sig
+
+	# ***** Step : Return *****
+	return ecen.sigWave(xL, Fs, sig_rt.get_t0())
