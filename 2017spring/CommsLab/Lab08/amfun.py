@@ -236,14 +236,14 @@ def qamxmtr(sig_mt, fcparms, fmparms=[]):
     tt = sig_mt.timeAxis()
     sig_xt = sig_mt.copy()
 
-    xt_R = Ac * sig_xt.signal().real *  cos(2*pi*fc*tt+thetai)
-    xt_I = Ac * sig_xt.signal().imag * -sin(2*pi*fc*tt+thetaq)
+    xt_R = Ac * sig_xt.signal().real *  cos(2*pi*fc*tt+thetaci)
+    xt_I = Ac * sig_xt.signal().imag * -sin(2*pi*fc*tt+thetacq)
 
     sig_xt.sig = xt_R + xt_I
     return sig_xt
 
 
-def qamrcvr(sig_rt, fcparms, fmparms=[]):
+def qamrcvrM(sig_rt, fcparms, fmparms=[]):
     """
     Quadrature Amplitude Modulation (QAM) Receiver with
     complex-valued input/output signals
@@ -305,7 +305,7 @@ def qamxmtrB(sig_mt, fcparms, fmparms=[]):
 	Fs = sig_mt.get_Fs()	# Sampling rate
 
 	if fmparms != 0:
-		[sig_mt_f, order]= filtfun.trapfilt_cc(sig_mt, [fm, 0], km, alpham, [0, 0])
+		[sig_mt_f, order]= filtfun.trapfilt_cc(sig_mt, [fm, 0], km, alpham)
 	else:
 		print('Warning: no low pass frequency provided and message not LPFd')
 
@@ -316,7 +316,7 @@ def qamxmtrB(sig_mt, fcparms, fmparms=[]):
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def qamrcvrB(sig_rt, fcparms, fmparms=[], plot=[]):
+def qamrcvr(sig_rt, fcparms, fmparms=[], plot=[]):
 	"""
 	Quadrature Amplitude Modulation (QAM) Receiver with
 	complex-valued input/output signals
@@ -364,10 +364,9 @@ def qamrcvrB(sig_rt, fcparms, fmparms=[], plot=[]):
 	vit = ecen.sigWave(vit, Fs, t0)
 	vqt = ecen.sigWave(vqt, Fs, t0)
 
-	[mit, orderi] = filtfun.trapfilt_cc(vit, [fm, 0], km, alpham, [0, 0])
-	[mqt, orderq] = filtfun.trapfilt_cc(vqt, [fm, 0], km, alpham, [0, 0])
+	[mit, orderi] = filtfun.trapfilt_cc(vit, [fm, 0], km, alpham)
+	[mqt, orderq] = filtfun.trapfilt_cc(vqt, [fm, 0], km, alpham)
 
-	# TODO how do I form xt, what is the output?
 	xL = mit.sig + 1j*mqt.sig
 
 	# ***** Step : Return *****

@@ -5,6 +5,7 @@ from pylab import *
 from scipy.signal import butter, lfilter
 import ecen4652 as ecen
 import quick
+import numpy as np
 
 def trapfilt0(sig_xt, fL, k, alfa):
     """
@@ -135,18 +136,100 @@ def trapfilt_cc(sig_xt, fparms, k, alfa, disp=''):
     ixk = round(Fs*k/float(2*fBW)) # Tail cutoff index
     tth = arange(-ixk,ixk+1)/float(Fs) # Time axis for h(t)
     n = len(tth)-1 # Filter order
-    ht_num = (sin(2*pi*fBW*tth)*sin(2*pi*alfa*fBW*tth))
-    ht_den = (pi*tth*2*pi*alfa*fBW*tth)
-    nans = where(ht_den==0)
-    for i in nans:
-        ht_den[i]=1 # ht[i-1]
-        ht_num[i]=2*fBW # ht[i-1]
-    ht = ht_num/ht_den
+    #ht_num = (sin(2*pi*fBW*tth)*sin(2*pi*alfa*fBW*tth))
+    #ht_den = (pi*tth*2*pi*alfa*fBW*tth)
+    #nans = where(ht_den==0)
+    #for i in nans:
+    #    ht_den[i]=1 # ht[i-1]
+    #    ht_num[i]=2*fBW # ht[i-1]
+    #ht = ht_num/ht_den
+    ht = 2*fBW*np.sinc(2*fBW*tth)*np.sinc(2*alfa*fBW*tth)
     htbp = 2*ht*exp(2j*pi*fc*tth) # Bandpass shift
     # htbp = 2*ht*cos(2*pi*fc*tth) # Bandpass shift
     titlestr = 'Complex Trapezoidal LPF, $h_L(t)$ Truncated to $|t|<k/(2f_L)$, $f_L$ = '+str(fBW)+' Hz, k = '+str(k)+', alpha = '+str(alfa)
     if disp=='plot':
         quick.quickplot(tth,htbp,'-b',[],[],'',titlestr,'Time (s)','h_L(t)')
-    yt = lfilter(htbp, 1, hstack((xt, zeros(ixk)))) # Compute filter output y(t)
+    yt = lfilter(htbp, 1, hstack((xt, zeros(ixk)))/float(Fs)) # Compute filter output y(t)
     yt = yt[ixk:] # Filter delay compensation
     return ecen.sigWave(yt/2, Fs, sig_xt.get_t0()), n
+
+def trapfilt_ccB(sig_xt, fparms, k, alpha, splot=[], limit=[]):
+    """
+    Delay compensated FIR LPF/BPF filter with trapezoidal
+    frequency response, complex-valued input/output and
+    complex-valued filter coefficients.
+    >>>>> sig_yt, n = trapfilt_cc(sig_xt, fparms, k, alpha) <<<<<
+    where
+    sig_yt:             waveform from class sigWave
+    sig_yt.signal():    complex filter output y(t), samp rate Fs
+    n:                    filter order
+    sig_xt:             waveform from class sigWave
+    sig_xt.signal():    complex filter input x(t), samp rate Fs
+    sig_xt.get_Fs():    sampling rate for x(t), y(t)
+    fparms:                = fL for LPF
+    fL:                    LPF cutoff frequency (-6 dB) in Hz
+    fparms:             = [fBW, fBc] for BPF
+    fBW:                 BPF -6dB bandwidth in Hz
+    fBc:                BPF center frequency (pos/neg) in Hz
+    k:                    h(t) is truncated to
+                        |t| <= k/(2*fL) for LPF
+                        |t| <= k/fBW for BPF
+    alpha:                 frequency rolloff parameter, linear
+                        rolloff over range
+                        (1-alpha)*fL <= |f| <= (1+alpha)*fL for LPF
+                        (1-alpha)*fBW/2 <= |f| <= (1+alpha)*fBW/2 for BPF
+    """
+    xt = sig_xt.signal()    # Input signal
+    Fs = sig_xt.get_Fs()    # Sampling rate
+    txt = sig_xt.timeAxis() # Get time axis for xt
+
+    if len(fparms)==1:
+        fBW=fparms[0] # fL = fBW when fc=0
+        fc=0
+        print('Low Pass Filter: fL=', fBW, 'Hz')
+    elif len(fparms)==2:
+        [fBW,fc]=fparms
+        print('Band Pass Filter: fBW=',fBW,'Hz, fc=',fc,'Hz')
+    else:
+        print('Unsupported number of fparms')
+        return
+
+    ixk = round(Fs*k/float(2*fBW)) # Tail cutoff index
+    tth = arange(-ixk,ixk+1)/float(Fs)         # Time axis for h(t)
+    n = len(tth)-1            # Filter order
+
+    # ***** Generate impulse response ht here *****
+    # Logical_and out the index where tth = 0 as this will break the function
+    ix0 = where(tth == 0)[0]
+    ix = where(logical_and(logical_and(tth>tth[0], tth<tth[len(tth)-1]),tth !=0))[0]
+    ht = zeros(len(tth)) + 1j*zeros(len(tth))        # Generate ht of correct size
+
+    ht = 2*fBW*np.sinc(2*fBW*tth)*np.sinc(2*alpha*fBW*tth)
+
+    # ***** If bandpass, frequency shift ****
+    if len(fparms)==2:
+        ht = ht*exp(1j*2*pi*fc*tth)
+
+    # ***** Calculate filter output *****
+    yt = lfilter(ht, 1, hstack((xt, zeros(ixk))))/float(Fs)        # Compute filter output y(t)
+    yt = yt[ixk:]
+    ty = arange(0, len(yt))/float(Fs)
+
+    # ***** If plotting requested, plot ht *****
+    if splot != []:
+        f1 = figure()
+        p1 = f1.add_subplot(211)
+        # f1.tight_layout()
+        p1.plot(ty, yt), grid()
+        p1.set_title('Filter Output')
+        p1.set_xlabel('Time [s]')
+        p2 = f1.add_subplot(212)
+        p2.plot(tth, ht), grid()
+        p2.set_title('Pulse h(t)')
+        p2.set_xlabel('Time [s]')
+        if limit != 0:
+            p1.set_xbound(0, limit)
+            p2.set_xbound(-limit, limit)
+        show()
+
+    return ecen.sigWave(yt, Fs, sig_xt.get_t0()), n
