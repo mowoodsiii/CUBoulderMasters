@@ -143,7 +143,7 @@ def showeye(sig_rt, FB, NTd=50, dispparms=[], plotsize='large'):
         quick.quickplot(fb*tteye,TM.T,'-b',[],[],'',title,'t/TB','Data Levels',[],[plotx,ploty])
 
 
-def showpsd(sig_xt, ff_lim, N, subject='', zoom=''):
+def showpsd(sig_xt, ff_lim, N, subject='', zoom='',sqrd=''):
     """
     Plot (DFT/FFT approximation to) power spectral density (PSD) of x(t).
     Displays S_x(f) either linear and absolute or normalized in dB.
@@ -167,6 +167,8 @@ def showpsd(sig_xt, ff_lim, N, subject='', zoom=''):
 
     # ***** Determine number of blocks, prepare x(t) *****
     xt = sig_xt.signal() # Get x(t)
+    if sqrd == 'sqrd':
+        xt = xt**2
     Fs = sig_xt.get_Fs() # Sampling rate of x(t)
     N = int(min(N, len(xt))) # blocklength; N <= length(xt) needed
     NN = int(floor(len(xt)/float(N))) # Number of blocks of length N
@@ -227,7 +229,11 @@ def showpsd(sig_xt, ff_lim, N, subject='', zoom=''):
         strgt = strgt + '\n' + '$P(-\infty,\infty)$={:.3g}W'.format(P_total)
 
         strgt = strgt + ',          $P({:.0f}Hz,{:.0f}Hz)$ = {:.3g}W = {:.3g}% of $P(-\infty,\infty)$'.format(f1,f2,P_ff_lim,100*P_ff_lim/float(P_total))
-        quick.quickplot(ff,Sxf,'-b',[],[],'',strgt,'f [Hz]','$S_x(f)$')
+        ylblstr = '$S_x(f)$'
+        if sqrd == 'sqrd':
+            strgt = 'Squared ' + strgt
+            ylblstr = '$S_x^2(f)$'
+        quick.quickplot(ff,Sxf,'-b',[],[],'',strgt,'f [Hz]',ylblstr)
         show()
 
     if zoom=='zoom':

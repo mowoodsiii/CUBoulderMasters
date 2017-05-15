@@ -137,7 +137,7 @@ def askrcvr(sig_rt,rtype,fcparms,FBparms,ptype,pparms):
     elif rtype=='noncoh':
         print('RCVR: Non-Coherent Signal')
         fc = fcparms
-        thetac=0
+        thetac = 0
 
     [FB,dly] = FBparms
 
