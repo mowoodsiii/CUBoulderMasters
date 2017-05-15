@@ -64,7 +64,7 @@ def askxmtr(seq_an,Fs,ptype,pparms,xtype,fcparms,plotparms=['noplot']):
         an = seq_an[0].signal()
         thetacn = seq_an[1]
         if thetacn=='rand':
-            thetacn=(pi/2.0)*rand(len(an))
+            thetacn=(pi*2.0)*rand(len(an))
         seq_an_sit = seq_an[0].copy()
         seq_an_sqt = seq_an[0].copy()
         seq_an_sit.sig = multiply(an,cos(thetacn))
@@ -151,11 +151,14 @@ def askrcvr(sig_rt,rtype,fcparms,FBparms,ptype,pparms):
     sig_vmit.sig = multiply(2*cos(2*pi*fc*tt+thetac),rt)
     sig_vmqt.sig = multiply(-2*sin(2*pi*fc*tt+thetac),rt)
 
-    [win,wit,ixn] = pamfun.pamrcvr10(sig_vmit, FBparms, ptype, pparms)
-    [wqn,wqt,ixn] = pamfun.pamrcvr10(sig_vmqt, FBparms, ptype, pparms)
+    [win,wit,ixn] = pamfun.pamrcvr10B(sig_vmit, FBparms, ptype, pparms)
+    [wqn,wqt,ixn] = pamfun.pamrcvr10B(sig_vmqt, FBparms, ptype, pparms)
 
     sig_bt = sig_rt.copy()
-    sig_bt.sig = sqrt((wit**2)+(wqt**2))
+    if rtype=='coh':
+        sig_bt.sig = wit
+    elif rtype=='noncoh':
+        sig_bt.sig = sqrt((wit**2)+(wqt**2))
     seq_bn = ecen.sigSequ(sig_bt.signal()[ixn],FB)
 
     sig_wt = sig_rt.copy()
